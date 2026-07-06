@@ -1,0 +1,12 @@
+Análisis y Ajustes Automáticos Realizados
+Al analizar los requerimientos (desde la pág. 5) frente al archivo Tablas BD.sql, he detectado y corregido automáticamente las siguientes brechas:
+
+Tabla Proveedor: Faltaban los campos rut, certificacion_bancaria, tipo_proveedor, tiempo_entrega_promedio, contacto_comercial, contacto_cartera, contacto_logistico, condiciones_pago y calificacion (1-5). Fueron añadidos a los modelos.
+
+Tabla Cliente: Faltaban direccion_operativa, direccion_residencia, representante_legal y tipo_regimen_tributario.
+
+Tabla Productos (Insumos): Faltaban nit_proveedor (relación obligatoria con proveedor) y demanda_diaria para el cálculo dinámico de días de stock.
+
+Tabla Ordenes_Pedidos: Se agregó lugar_entrega (bodega) especificado en el PDF y codigo_producto en los detalles.
+
+Auditoría y Restricciones: Se implementó eliminación lógica (activo = Boolean) en Productos, y se bloquearon las actualizaciones/eliminaciones en Facturas y Órdenes guardadas para cumplir con la normativa de auditoría.
