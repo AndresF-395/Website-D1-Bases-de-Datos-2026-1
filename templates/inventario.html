@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Inventario</title>
+</head>
+
+<body>
+
+<h1>Inventario de Productos</h1>
+
+<a href="/">Volver al inicio</a>
+
+<br><br>
+
+<a href="/inventario/nuevo">
+    + Nuevo Inventario
+</a>
+
+<br><br>
+
+<table border="1">
+
+<tr>
+    <th>ID</th>
+    <th>Producto</th>
+    <th>Sede</th>
+    <th>Cantidad Disponible</th>
+    <th>Stock Mínimo</th>
+    <th>Stock Máximo</th>
+    <th>Estado</th>
+    <th>Acciones</th>
+</tr>
+
+{% for inventario in inventarios %}
+
+<tr>
+
+<td>{{ inventario[0] }}</td>
+<td>{{ inventario[1] }}</td>
+<td>{{ inventario[2] }}</td>
+<td>{{ inventario[3] }}</td>
+<td>{{ inventario[4] }}</td>
+<td>{{ inventario[5] }}</td>
+
+<td>
+
+{% if inventario[3] == 0 %}
+AGOTADO
+
+{% elif inventario[3] < inventario[4] %}
+CRÍTICO
+
+{% elif inventario[3] <= inventario[5] %}
+ALERTA
+
+{% else %}
+SEGURO
+
+{% endif %}
+
+</td>
+
+<td>
+    <a href="/inventario/editar/{{ inventario[0] }}">
+        Editar
+    </a>
+    |
+    <a href="/inventario/eliminar/{{ inventario[0] }}">
+        Eliminar
+    </a>
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>

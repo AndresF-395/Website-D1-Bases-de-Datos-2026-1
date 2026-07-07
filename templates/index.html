@@ -1,32 +1,28 @@
-{% extends 'base.html' %}
-{% block content %}
-<h2>Estado del Inventario (Semaforización)</h2>
-<table class="table table-bordered mt-3">
-    <thead class="table-dark">
-        <tr>
-            <th>Producto</th>
-            <th>Stock Actual</th>
-            <th>Demanda Diaria</th>
-            <th>Estado</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in datos %}
-        <tr>
-            <td>{{ item.inv.producto.nombre_producto }}</td>
-            <td>{{ item.inv.cantidad_disponible }}</td>
-            <td>{{ item.demanda }}</td>
-            <td>
-                {% if item.estado == 'AGOTADO' or item.estado == 'CRÍTICO' %}
-                    <span class="badge bg-danger">{{ item.estado }}</span>
-                {% elif item.estado == 'ALERTA' %}
-                    <span class="badge bg-warning text-dark">{{ item.estado }}</span>
-                {% else %}
-                    <span class="badge bg-success">{{ item.estado }}</span>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestor de Base de Datos</title>
+</head>
+
+<body>
+
+<h1>Gestor Empresarial</h1>
+
+<h2>Módulos</h2>
+
+<ul>
+    <li><a href="/productos">Productos</a></li>
+    <li><a href="/clientes">Clientes</a></li>
+    <li>
+<a href="/proveedores">Proveedores</a>
+</li>
+    <li><a href="/inventario">Inventario</a></li>
+    
+    
+<li><a href="/facturas">Facturas</a></li>
+
+<li><a href="/ordenes">Órdenes de Pedido</a></li>
+</ul>
+
+</body>
+</html>

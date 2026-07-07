@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Editar Cliente</title>
+</head>
+
+<body>
+
+<h1>Editar Cliente</h1>
+
+
+<form method="POST">
+
+<p>
+Tipo documento:
+{{ cliente[1] }}
+</p>
+
+<p>
+Número documento:
+{{ cliente[2] }}
+</p>
+
+
+Nombres:
+<input name="nombres" value="{{ cliente[3] }}">
+
+<br><br>
+
+Apellidos:
+<input name="apellidos" value="{{ cliente[4] }}">
+
+<br><br>
+
+Teléfono:
+<input name="telefono_cliente" value="{{ cliente[5] }}">
+
+<br><br>
+
+Correo:
+<input name="correo_cliente" value="{{ cliente[6] }}">
+
+<br><br>
+
+Habeas Data:
+<input name="habeas_data" value="{{ cliente[7] }}">
+
+<br><br>
+
+<button type="submit">
+Guardar cambios
+</button>
+
+</form>
+
+</body>
+
+</html>

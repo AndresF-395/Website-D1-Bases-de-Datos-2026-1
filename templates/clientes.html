@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clientes</title>
+</head>
+
+<body>
+
+<h1>Lista de Clientes</h1>
+<a href="/clientes/nuevo">+ Nuevo Cliente</a>
+<a href="/">Volver al inicio</a>
+
+<br><br>
+
+<table border="1">
+
+<tr>
+    <th>ID</th>
+    <th>Tipo Documento</th>
+    <th>Número Documento</th>
+    <th>Nombres</th>
+    <th>Apellidos</th>
+    <th>Teléfono</th>
+    <th>Correo</th>
+    <th>Habeas Data</th>
+</tr>
+
+{% for cliente in clientes %}
+
+<tr>
+    <td>{{ cliente[0] }}</td>
+    <td>{{ cliente[1] }}</td>
+    <td>{{ cliente[2] }}</td>
+    <td>{{ cliente[3] }}</td>
+    <td>{{ cliente[4] }}</td>
+    <td>{{ cliente[5] }}</td>
+    <td>{{ cliente[6] }}</td>
+    <td>{{ cliente[7] }}</td>
+    <td>
+    <a href="/clientes/editar/{{ cliente[0] }}">
+        Editar
+    </a>
+</td>
+
+<td>
+    <a href="/clientes/eliminar/{{ cliente[0] }}"
+       onclick="return confirm('¿Está seguro de eliminar este cliente?');">
+        Eliminar
+    </a>
+</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>
