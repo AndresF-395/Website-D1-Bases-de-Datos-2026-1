@@ -459,3 +459,53 @@ CREATE TRIGGER trg_descontar_inventario
 AFTER INSERT ON Detalle_Factura
 FOR EACH ROW
 EXECUTE FUNCTION fx_actualizar_inventario_venta();
+
+
+/* Nueva función para el siguiente requisito: 
+*Usando PL/pgSQL implementar gestión automática del inventario de productos / insumos.
+* De modo que cuando se realicen órdenes de pedido se actualice el stock.
+*/
+CREATE OR REPLACE FUNCTION fx_actualizar_inventario_pedido()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_id_sede INT;
+BEGIN
+
+    -- Obtener la sede asociada a la orden
+    SELECT id_sede
+    INTO v_id_sede
+    FROM Ordenes_Pedidos
+    WHERE id_orden_pedido = NEW.id_orden_pedido;
+
+    -- Verificar que exista el registro en inventario
+    IF NOT EXISTS (
+        SELECT 1
+        FROM Inventario
+        WHERE id_producto = NEW.id_producto
+          AND id_sede = v_id_sede
+    ) THEN
+        RAISE EXCEPTION
+            'No existe registro de inventario para el producto % en la sede %.',
+            NEW.id_producto,
+            v_id_sede;
+    END IF;
+
+    -- Aumentar el stock disponible
+    UPDATE Inventario
+    SET cantidad_disponible = cantidad_disponible + NEW.cantidad
+    WHERE id_producto = NEW.id_producto
+      AND id_sede = v_id_sede;
+
+    RETURN NEW;
+
+END;
+$$;
+
+--Trigger correspondiente a la última función agregada
+CREATE TRIGGER trg_actualizar_inventario_pedido
+AFTER INSERT
+ON Detalles_Pedidos
+FOR EACH ROW
+EXECUTE FUNCTION fx_actualizar_inventario_pedido();
