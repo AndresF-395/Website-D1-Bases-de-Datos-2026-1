@@ -103,9 +103,9 @@ INSERT INTO Productos (id_producto, codigo_de_barras, nombre_producto, tipo_de_p
 (102, '7701234000710', 'Algodón JGB Zig Zag Paquete 50g', 'Cuidado Personal', 1900.00, 2800.00, 'JGB', NULL, 'GENERAL', TRUE, 45),
 (103, '7701234000717', 'Agua Oxigenada JGB Frasco 120ml', 'Cuidado Personal', 1400.00, 2100.00, 'JGB', NULL, 'DIFERENCIAL', TRUE, 22),
 (104, '7701234000724', 'Suero Oral JGB Coco Frasco 500ml', 'Bebidas', 2600.00, 3800.00, 'JGB', '2027-11-10', 'DIFERENCIAL', TRUE, 38),
-(105, '7701234000731', 'Shampoo Johnson\'s Baby Manzanilla 400ml', 'Cuidado Personal', 12500.00, 17900.00, 'Johnson\'s', NULL, 'GENERAL', TRUE, 50),
-(106, '7701234000738', 'Crema Líquida Johnson\'s Baby Original 400ml', 'Cuidado Personal', 14800.00, 20900.00, 'Johnson\'s', NULL, 'GENERAL', TRUE, 36),
-(107, '7701234000745', 'Copitos Johnson\'s Baby Caja x100', 'Cuidado Personal', 3400.00, 4900.00, 'Johnson\'s', NULL, 'GENERAL', TRUE, 62),
+(105, '7701234000731', 'Shampoo Johnsons Baby Manzanilla 400ml', 'Cuidado Personal', 12500.00, 17900.00, 'Johnsons', NULL, 'GENERAL', TRUE, 50),
+(106, '7701234000738', 'Crema Líquida Johnsons Baby Original 400ml', 'Cuidado Personal', 14800.00, 20900.00, 'Johnsons', NULL, 'GENERAL', TRUE, 36),
+(107, '7701234000745', 'Copitos Johnsons Baby Caja x100', 'Cuidado Personal', 3400.00, 4900.00, 'Johnsons', NULL, 'GENERAL', TRUE, 62),
 (108, '7701234000752', 'Enjuague Bucal Listerine Cool Mint 500ml', 'Cuidado Personal', 16500.00, 22900.00, 'Listerine', NULL, 'GENERAL', TRUE, 48),
 (109, '7701234000759', 'Shampoo Head & Shoulders Limpieza Renovadora 700ml', 'Cuidado Personal', 26500.00, 35900.00, 'Head & Shoulders', NULL, 'GENERAL', TRUE, 58),
 (110, '7701234000766', 'Detergente Líquido Ariel Concentrado 1.2L', 'Limpieza', 15400.00, 21900.00, 'Ariel', NULL, 'GENERAL', TRUE, 52),
@@ -155,10 +155,10 @@ INSERT INTO Productos (id_producto, codigo_de_barras, nombre_producto, tipo_de_p
 (154, '7701234001074', 'Alimento NutreCat Delicias Marinas 1.5kg', 'Snacks', 12900.00, 18200.00, 'Solla', '2028-01-05', 'GENERAL', TRUE, 30),
 (155, '7701234001081', 'Maíz Quebrado Limpio Solla Bolsa 5kg', 'Harinas', 11800.00, 16500.00, 'Solla', '2027-02-28', 'GENERAL', TRUE, 18),
 (156, '7701234001088', 'Alimento NutreCan Cachorros Bolsa 2kg', 'Snacks', 15800.00, 21900.00, 'Solla', '2027-05-15', 'GENERAL', FALSE, 22),
-(157, '7701234001095', 'Atún Van Camp\'s En Aceite Lata 160g', 'Enlatados', 5400.00, 7600.00, 'Van Camp\'s', '2027-08-20', 'GENERAL', TRUE, 68),
-(158, '7701234001102', 'Atún Van Camp\'s En Agua Lata 160g', 'Enlatados', 5500.00, 7750.00, 'Van Camp\'s', '2027-11-10', 'GENERAL', TRUE, 62),
-(159, '7701234001109', 'Sardinas En Salsa De Tomate Lata 425g', 'Enlatados', 4100.00, 5800.00, 'Van Camp\'s', '2028-01-05', 'GENERAL', TRUE, 41),
-(160, '7701234001116', 'Lomitos De Atún Con Verduras Lata 160g', 'Enlatados', 4800.00, 6800.00, 'Van Camp\'s', '2027-02-28', 'GENERAL', TRUE, 34),
+(157, '7701234001095', 'Atún Van Camps En Aceite Lata 160g', 'Enlatados', 5400.00, 7600.00, 'Van Camps', '2027-08-20', 'GENERAL', TRUE, 68),
+(158, '7701234001102', 'Atún Van Camps En Agua Lata 160g', 'Enlatados', 5500.00, 7750.00, 'Van Camps', '2027-11-10', 'GENERAL', TRUE, 62),
+(159, '7701234001109', 'Sardinas En Salsa De Tomate Lata 425g', 'Enlatados', 4100.00, 5800.00, 'Van Camps', '2028-01-05', 'GENERAL', TRUE, 41),
+(160, '7701234001116', 'Lomitos De Atún Con Verduras Lata 160g', 'Enlatados', 4800.00, 6800.00, 'Van Camps', '2027-02-28', 'GENERAL', TRUE, 34),
 (161, '7701234001123', 'Néctar California Sabor Durazno 1L', 'Bebidas', 3600.00, 5100.00, 'California', '2027-05-15', 'GENERAL', TRUE, 48),
 (162, '7701234001130', 'Néctar California Sabor Manzana 200ml x6', 'Bebidas', 5200.00, 7400.00, 'California', '2027-08-20', 'GENERAL', TRUE, 42),
 (163, '7701234001137', 'Salsa De Tomate California Doypack 400g', 'Conservas', 3500.00, 4900.00, 'California', '2027-11-10', 'GENERAL', TRUE, 55),
@@ -199,4 +199,5 @@ INSERT INTO Productos (id_producto, codigo_de_barras, nombre_producto, tipo_de_p
 (198, '7701234001382', 'Arroz Diana Vitamor Bolsa 5kg', 'Harinas', 17200.00, 21500.00, 'Diana', '2027-05-15', 'EXENTO', TRUE, 62),
 (199, '7701234001389', 'Aceite De Arroz Diana Botella 900ml', 'Aceites', 8900.00, 11500.00, 'Diana', '2027-08-20', 'DIFERENCIAL', TRUE, 30),
 (200, '7701234001396', 'Arroz Diana Integral Con Linaza 1kg', 'Harinas', 4500.00, 5800.00, 'Diana', '2027-11-10', 'EXENTO', TRUE, 41);
+
 
