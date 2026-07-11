@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from conexion import conectar
+import conexion
 
 app = Flask(__name__)
 
@@ -20,8 +21,7 @@ def productos():
     cursor.execute("""
         SELECT id_producto, codigo_de_barras, nombre_producto, 
                tipo_de_producto, precio_venta, marca
-        FROM productos
-        LIMIT 20;
+        FROM productos;
     """)
 
     productos = cursor.fetchall()
@@ -154,12 +154,20 @@ def eliminar_cliente(id_cliente):
     conexion = conectar()
     cursor = conexion.cursor()
 
-    cursor.execute("""
-        DELETE FROM cliente
-        WHERE id_cliente = %s
-    """, (id_cliente,))
+    try:
+        cursor.execute("""
+            DELETE FROM cliente
+            WHERE id_cliente = %s
+        """, (id_cliente,))
 
-    conexion.commit()
+        conexion.commit()
+
+    except Exception:
+        conexion.rollback()
+        cursor.close()
+        conexion.close()
+        return "No se puede eliminar este cliente porque tiene facturas asociadas."
+
 
     cursor.close()
     conexion.close()
@@ -291,18 +299,17 @@ def eliminar_proveedor(nit_proveedor):
 
         conexion.commit()
 
-    except Exception as e:
+    except Exception:
 
-        conexion.rollback()
-
-        cursor.close()
-        conexion.close()
-
-        return "No se puede eliminar este proveedor porque tiene registros asociados."
+            conexion.rollback()
+            cursor.close()
+            conexion.close()
+            return "No se puede eliminar este proveedor porque tiene registros asociados."
 
 
     cursor.close()
     conexion.close()
+
 
     return redirect("/proveedores")
 # ==========================
@@ -695,98 +702,8 @@ def nueva_factura():
         sedes=sedes,
         empleados=empleados
     )
-@app.route("/facturas/editar/<int:id>", methods=["GET", "POST"])
-def editar_factura(id):
-
-    conexion = conectar()
-    cursor = conexion.cursor()
-
-    if request.method == "POST":
-
-        forma = request.form["forma_pago"]
-        subtotal = request.form["subtotal"]
-        iva = request.form["total_iva"]
-        descuento = request.form["total_descuento"]
-        total = request.form["total_factura"]
-        pagado = request.form["valor_pagado"]
-        cambio = request.form["cambio_devuelto"]
-
-        cursor.execute("""
-            UPDATE factura
-            SET
-                forma_pago=%s,
-                subtotal=%s,
-                total_iva=%s,
-                total_descuento=%s,
-                total_factura=%s,
-                valor_pagado=%s,
-                cambio_devuelto=%s
-            WHERE id_factura=%s
-        """,
-        (
-            forma,
-            subtotal,
-            iva,
-            descuento,
-            total,
-            pagado,
-            cambio,
-            id
-        ))
-
-        conexion.commit()
-
-        cursor.close()
-        conexion.close()
-
-        return redirect("/facturas")
-
-    cursor.execute("""
-        SELECT
-            id_factura,
-            numero_factura_oficial,
-            id_cliente,
-            id_sede,
-            id_empleado,
-            forma_pago,
-            subtotal,
-            total_iva,
-            total_descuento,
-            total_factura,
-            valor_pagado,
-            cambio_devuelto
-        FROM factura
-        WHERE id_factura=%s
-    """,(id,))
-
-    factura = cursor.fetchone()
-
-    cursor.close()
-    conexion.close()
-
-    return render_template(
-        "editar_factura.html",
-        factura=factura
-    )
 
 
-@app.route("/facturas/eliminar/<int:id>")
-def eliminar_factura(id):
-
-    conexion = conectar()
-    cursor = conexion.cursor()
-
-    cursor.execute("""
-        DELETE FROM factura
-        WHERE id_factura=%s
-    """,(id,))
-
-    conexion.commit()
-
-    cursor.close()
-    conexion.close()
-
-    return redirect("/facturas")
 if __name__ == "__main__":
     app.run(debug=True)
 

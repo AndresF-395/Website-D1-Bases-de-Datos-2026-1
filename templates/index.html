@@ -1,28 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Gestor de Base de Datos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Logístico - Tiendas D1</title>
+    
+
+    <style>
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #E30613; /* Rojo D1 */
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Convertimos la lista en una cuadrícula de botones */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        /* Diseño de los botones */
+        li a {
+            display: block;
+            text-align: center;
+            background-color: white;
+            color: #E30613;
+            text-decoration: none;
+            padding: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: 2px solid #E30613;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+       
+        li a:hover {
+            background-color: #FFD400; /* Amarillo D1 */
+            color: #000;
+            border-color: #FFD400;
+            transform: translateY(-3px);
+            box-shadow: 0px 5px 15px rgba(255, 212, 0, 0.4);
+        }
+
+        .logo-d1 {
+            width: 100px;        
+            height: auto;        
+            margin-bottom: 10px; 
+            display: block;      
+            margin-left: auto;   
+            margin-right: auto;  
+        }
+
+
+    </style>
 </head>
 
 <body>
 
-<h1>Gestor Empresarial</h1>
+    <div class="header">
+       <img src="https://logowik.com/content/uploads/images/tiendas-d11519.logowik.com.webp" alt="Logo Tiendas D1" class="logo-d1">
+        <h1>Tiendas D1</h1>
+        <p>Sistema de Gestión y Logística</p>
+    </div>
 
-<h2>Módulos</h2>
+    <div class="container">
+        <h2>Módulos del Sistema</h2>
 
-<ul>
-    <li><a href="/productos">Productos</a></li>
-    <li><a href="/clientes">Clientes</a></li>
-    <li>
-<a href="/proveedores">Proveedores</a>
-</li>
-    <li><a href="/inventario">Inventario</a></li>
-    
-    
-<li><a href="/facturas">Facturas</a></li>
-
-<li><a href="/ordenes">Órdenes de Pedido</a></li>
-</ul>
+        <ul>
+            <!-- Mantuvimos las rutas originales de tus compañeros para no romper nada -->
+            <li><a href="/productos"> Productos</a></li>
+            <li><a href="/clientes"> Clientes</a></li>
+            <li><a href="/proveedores"> Proveedores</a></li>
+            <li><a href="/inventario"> Inventario</a></li>
+            <li><a href="/facturas"> Facturas</a></li>
+            <li><a href="/ordenes"> Órdenes de Pedido</a></li>
+        </ul>
+    </div>
 
 </body>
 </html>
