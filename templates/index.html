@@ -9,43 +9,116 @@
         <p class="col-md-8 fs-4 text-muted">Consulte inventarios, despache órdenes y gestione la facturación de forma ágil y centralizada.</p>
     </div>
 </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Logístico - Tiendas D1</title>
+    
 
-<div class="row g-4">
-    <div class="col-md-3">
-        <div class="card h-100 shadow-sm border-start border-primary border-4">
-            <div class="card-body">
-                <h5 class="card-title text-muted fw-bold"><i class="bi bi-box-seam"></i> PRODUCTOS</h5>
-                <p class="card-text">Catálogo general, precios y códigos de barra.</p>
-                <a href="{{ url_for('productos.listar') }}" class="btn btn-sm btn-outline-primary">Ir a catálogo</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card h-100 shadow-sm border-start border-success border-4">
-            <div class="card-body">
-                <h5 class="card-title text-muted fw-bold"><i class="bi bi-boxes"></i> INVENTARIO</h5>
-                <p class="card-text">Niveles de stock por sedes y alertas críticas.</p>
-                <a href="{{ url_for('inventario.listar') }}" class="btn btn-sm btn-outline-success">Ver existencias</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card h-100 shadow-sm border-start border-warning border-4">
-            <div class="card-body">
-                <h5 class="card-title text-muted fw-bold"><i class="bi bi-receipt"></i> FACTURACIÓN</h5>
-                <p class="card-text">Historial inmutable de cajas y auditoría de ventas.</p>
-                <a href="{{ url_for('facturas.listar') }}" class="btn btn-sm btn-outline-warning text-dark">Ver ventas</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card h-100 shadow-sm border-start border-danger border-4">
-            <div class="card-body">
-                <h5 class="card-title text-muted fw-bold"><i class="bi bi-person-badge"></i> EMPLEADOS</h5>
-                <p class="card-text">Nómina, cargos y sucursales asignadas.</p>
-                <a href="{{ url_for('empleados.listar') }}" class="btn btn-sm btn-outline-danger">Administrar personal</a>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+    <style>
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #E30613; /* Rojo D1 */
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Convertimos la lista en una cuadrícula de botones */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        /* Diseño de los botones */
+        li a {
+            display: block;
+            text-align: center;
+            background-color: white;
+            color: #E30613;
+            text-decoration: none;
+            padding: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: 2px solid #E30613;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+       
+        li a:hover {
+            background-color: #FFD400; /* Amarillo D1 */
+            color: #000;
+            border-color: #FFD400;
+            transform: translateY(-3px);
+            box-shadow: 0px 5px 15px rgba(255, 212, 0, 0.4);
+        }
+
+        .logo-d1 {
+            width: 100px;        
+            height: auto;        
+            margin-bottom: 10px; 
+            display: block;      
+            margin-left: auto;   
+            margin-right: auto;  
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+<h1>Gestor Empresarial</h1>
+
+<h2>Módulos</h2>
+
+<ul>
+    <li><a href="/productos">Productos</a></li>
+    <li><a href="/clientes">Clientes</a></li>
+    <li>
+<a href="/proveedores">Proveedores</a>
+</li>
+    <li><a href="/inventario">Inventario</a></li>
+    
+    
+<li><a href="/facturas">Facturas</a></li>
+
+<li><a href="/ordenes">Órdenes de Pedido</a></li>
+</ul>
+
+</body>
+</html>

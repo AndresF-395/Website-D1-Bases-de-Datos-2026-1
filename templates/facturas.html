@@ -29,7 +29,7 @@
     <th>Fecha</th>
     <th>Forma de Pago</th>
     <th>Total</th>
-    <th>Acciones</th>
+    
 </tr>
 
 {% for factura in facturas %}
@@ -43,21 +43,6 @@
 <td>{{ factura[4] }}</td>
 <td>{{ factura[5] }}</td>
 <td>{{ factura[6] }}</td>
-
-<td>
-
-<a href="/facturas/editar/{{ factura[7] }}">
-    Editar
-</a>
-
-|
-
-<a href="/facturas/eliminar/{{ factura[7] }}"
-onclick="return confirm('¿Eliminar esta factura?')">
-    Eliminar
-</a>
-
-</td>
 
 </tr>
 
