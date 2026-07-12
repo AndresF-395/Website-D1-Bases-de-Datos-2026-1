@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_pagination %}
+
+{% block title %}Personal - D1{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-secondary fw-bold"><i class="bi bi-person-badge"></i> Gestión de Personal</h2>
+    <a href="{{ url_for('empleados.nuevo') }}" class="btn btn-primary shadow-sm"><i class="bi bi-person-plus"></i> Registrar Empleado</a>
+</div>
+
+<!-- Filtros de Búsqueda -->
+<div class="card p-3 mb-4 shadow-sm bg-white border-0">
+    <form method="GET" action="{{ url_for('empleados.listar') }}" class="row g-3 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control border-start-0" placeholder="Buscar por Cédula, Nombre o Apellido..." value="{{ busqueda or '' }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="orden_columna" class="form-select">
+                <option value="id_empleado" {% if orden_columna == 'id_empleado' %}selected{% endif %}>ID</option>
+                <option value="nombre_empleado" {% if orden_columna == 'nombre_empleado' %}selected{% endif %}>Nombre</option>
+                <option value="cargo" {% if orden_columna == 'cargo' %}selected{% endif %}>Cargo</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="orden_direccion" class="form-select">
+                <option value="ASC" {% if orden_direccion == 'ASC' %}selected{% endif %}>Ascendente</option>
+                <option value="DESC" {% if orden_direccion == 'DESC' %}selected{% endif %}>Descendente</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-dark w-100"><i class="bi bi-funnel"></i></button>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Resultados -->
+<div class="table-responsive border-0">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Documento</th>
+                <th scope="col">Nombres y Apellidos</th>
+                <th scope="col">Cargo</th>
+                <th scope="col">Salario</th>
+                <th scope="col">Sede Asignada</th>
+                <th scope="col" class="text-center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for empleado in empleados %}
+            <tr>
+                <td><span class="badge bg-secondary">{{ empleado.cedula_empleado }}</span></td>
+                <td class="fw-bold">{{ empleado.nombre_empleado }} {{ empleado.apellido_empleado }}</td>
+                <td>{{ empleado.cargo }}</td>
+                <td class="text-success fw-bold">${{ "{:,.0f}".format(empleado.salario) }}</td>
+                <td>{{ empleado.nombre_sede }}</td>
+                <td class="text-center">
+                    <a href="{{ url_for('empleados.editar', id_empleado=empleado.id_empleado) }}" class="btn btn-sm btn-outline-warning" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <form action="{{ url_for('empleados.eliminar', id_empleado=empleado.id_empleado) }}" method="POST" class="d-inline form-delete">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="text-center py-4 text-muted">No se encontraron empleados registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_paginas %}
+    {{ render_pagination(page, total_paginas, 'empleados.listar', busqueda, orden_columna, orden_direccion) }}
+{% endif %}
+{% endblock %}

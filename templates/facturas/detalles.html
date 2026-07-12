@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle de Factura {{ factura.numero_factura_oficial }} - D1{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-secondary fw-bold"><i class="bi bi-receipt-cutoff"></i> Detalle de Factura</h2>
+    <div>
+        <button onclick="window.print()" class="btn btn-secondary shadow-sm"><i class="bi bi-printer"></i> Imprimir</button>
+        <a href="{{ url_for('facturas.listar') }}" class="btn btn-outline-dark shadow-sm">Volver al Historial</a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm border-0 print-container">
+            <div class="card-header bg-dark text-white p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0 text-warning"><i class="bi bi-shop"></i> Tiendas D1</h3>
+                        <small>Factura de Venta Electrónica</small>
+                    </div>
+                    <div class="text-end">
+                        <h4 class="mb-0">N° {{ factura.numero_factura_oficial }}</h4>
+                        <small>Fecha: {{ factura.fecha_emision }}</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body p-4 bg-white">
+                <div class="row mb-4 border-bottom pb-3">
+                    <div class="col-sm-6">
+                        <h6 class="text-muted fw-bold mb-2">Datos del Cliente:</h6>
+                        <div><strong>Nombre:</strong> {{ factura.cliente_nombre }}</div>
+                        <div><strong>Documento:</strong> {{ factura.cliente_documento }}</div>
+                        <div><strong>Teléfono:</strong> {{ factura.telefono_cliente or 'N/A' }}</div>
+                    </div>
+                    <div class="col-sm-6 text-end">
+                        <h6 class="text-muted fw-bold mb-2">Detalles de Operación:</h6>
+                        <div><strong>Atendido por:</strong> {{ factura.empleado_nombre }}</div>
+                        <div><strong>Sede:</strong> {{ factura.nombre_sede }}</div>
+                    </div>
+                </div>
+
+                <div class="table-responsive mb-4">
+                    <table class="table table-sm table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th class="text-center">Cant.</th>
+                                <th class="text-end">Precio Unit.</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in detalles %}
+                            <tr>
+                                <td><small class="text-muted font-monospace">{{ item.codigo_de_barras }}</small></td>
+                                <td>{{ item.nombre_producto }}</td>
+                                <td class="text-center">{{ item.cantidad }}</td>
+                                <!-- Solución al Bug de Formato: usar precio_unitario_aplicado -->
+                                <td class="text-end">${{ "{:,.2f}".format(item.precio_unitario_aplicado) }}</td>
+                                <!-- Mejor usar subtotal_linea que ya viene de la BD en lugar de calcularlo en Jinja -->
+                                <td class="text-end fw-bold">${{ "{:,.2f}".format(item.subtotal_linea) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-md-5">
+                        <table class="table table-sm table-borderless">
+                            <tr class="fs-5 text-success border-top border-2 border-dark">
+                                <th>TOTAL A PAGAR:</th>
+                                <th class="text-end fw-bold">${{ "{:,.2f}".format(factura.total_factura) }}</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-5 text-muted small">
+                    <p class="mb-0">Gracias por su compra en Tiendas D1.</p>
+                    <p>Este documento es inalterable por normativas fiscales.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        body * { visibility: hidden; }
+        .print-container, .print-container * { visibility: visible; }
+        .print-container { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
+        .navbar, .sidebar-wrapper, footer, .btn { display: none !important; }
+    }
+</style>
+{% endblock %}

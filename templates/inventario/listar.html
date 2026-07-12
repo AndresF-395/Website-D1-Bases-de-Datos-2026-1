@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_pagination %}
+
+{% block title %}Inventario por Sedes - D1{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-secondary fw-bold"><i class="bi bi-boxes"></i> Inventario de Existencias</h2>
+    <a href="{{ url_for('inventario.nuevo') }}" class="btn btn-primary shadow-sm"><i class="bi bi-plus-lg"></i> Ajuste de Stock</a>
+</div>
+
+<!-- Filtros de Búsqueda -->
+<div class="card p-3 mb-4 shadow-sm bg-white border-0">
+    <form method="GET" action="{{ url_for('inventario.listar') }}" class="row g-3 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control border-start-0" placeholder="Buscar por Nombre de Producto, Código o Sede..." value="{{ busqueda or '' }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="orden_columna" class="form-select">
+                <option value="nombre_producto" {% if orden_columna == 'nombre_producto' %}selected{% endif %}>Producto</option>
+                <option value="nombre_sede" {% if orden_columna == 'nombre_sede' %}selected{% endif %}>Sede</option>
+                <option value="cantidad_disponible" {% if orden_columna == 'cantidad_disponible' %}selected{% endif %}>Cantidad</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="orden_direccion" class="form-select">
+                <option value="ASC" {% if orden_direccion == 'ASC' %}selected{% endif %}>Ascendente</option>
+                <option value="DESC" {% if orden_direccion == 'DESC' %}selected{% endif %}>Descendente</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-dark w-100"><i class="bi bi-funnel"></i></button>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Resultados -->
+<div class="table-responsive border-0 shadow-sm rounded">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Sede</th>
+                <th scope="col">Producto</th>
+                <th scope="col" class="text-center">Stock Actual</th>
+                <th scope="col" class="text-center">Días de Stock</th>
+                <th scope="col" class="text-center">Categoría</th>
+                <th scope="col">Acción Recomendada</th>
+                <th scope="col" class="text-center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in inventarios %}
+            <tr class="{% if registro.color == 'danger' %}table-danger{% elif registro.color == 'warning' %}table-warning{% endif %}">
+                <td class="fw-bold text-secondary"><i class="bi bi-geo-alt-fill"></i> {{ registro.nombre_sede }}</td>
+                <td>
+                    <span class="d-block">{{ registro.nombre_producto }}</span>
+                    <small class="font-monospace text-muted">{{ registro.codigo_de_barras }}</small>
+                </td>
+                <td class="text-center fw-bold">{{ registro.cantidad_disponible }}</td>
+                <td class="text-center">{{ registro.dias_stock_display }} días</td>
+                <td class="text-center">
+                    <span class="badge bg-{{ registro.color }} fs-6">{{ registro.estado }}</span>
+                </td>
+                <td class="small fw-semibold text-{{ registro.color }}">{{ registro.accion }}</td>
+                <td class="text-center">
+                    <a href="{{ url_for('inventario.editar', id_inventario=registro.id_inventario) }}" class="btn btn-sm btn-outline-primary" title="Modificar Stock"><i class="bi bi-pencil"></i></a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                    No se encontraron registros de inventario.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Paginación -->
+{{ render_pagination(page, total_paginas, 'inventario.listar', busqueda, orden_columna, orden_direccion) }}
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Cliente - D1{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white fw-bold py-3">
+                <i class="bi bi-pencil-square"></i> Editar Cliente: {{ cliente.nombres }} {{ cliente.apellidos }}
+            </div>
+            <div class="card-body p-4 bg-white">
+                <form method="POST" action="{{ url_for('clientes.editar', id_cliente=cliente.id_cliente) }}">
+                    
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Tipo Documento</label>
+                            <input type="text" class="form-control bg-light" value="{{ cliente.tipo_documento }}" readonly>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label fw-bold small text-muted">Número de Documento</label>
+                            <input type="text" class="form-control bg-light" value="{{ cliente.numero_documento }}" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Nombres *</label>
+                            <input type="text" name="nombres" class="form-control" value="{{ cliente.nombres }}" required autocomplete="off">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Apellidos *</label>
+                            <input type="text" name="apellidos" class="form-control" value="{{ cliente.apellidos }}" required autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Teléfono</label>
+                            <input type="text" name="telefono_cliente" class="form-control" value="{{ cliente.telefono_cliente or '' }}" autocomplete="off">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Correo Electrónico</label>
+                            <input type="email" name="correo_cliente" class="form-control" value="{{ cliente.correo_cliente or '' }}" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted">Dirección de Residencia</label>
+                        <input type="text" name="direccion_residencia" class="form-control" value="{{ cliente.direccion_residencia or '' }}" autocomplete="off">
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('clientes.listar') }}" class="btn btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-warning"><i class="bi bi-arrow-clockwise"></i> Actualizar Cliente</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

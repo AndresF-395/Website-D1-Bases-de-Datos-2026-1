@@ -1,28 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Gestor de Base de Datos</title>
-</head>
+{% extends 'base.html' %}
 
-<body>
+{% block title %}Panel de Control - D1{% endblock %}
 
-<h1>Gestor Empresarial</h1>
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3 border shadow-sm">
+    <div class="container-fluid py-3">
+        <h1 class="display-5 fw-bold text-dark">Bienvenido al Sistema de Gestión D1</h1>
+        <p class="col-md-8 fs-4 text-muted">Consulte inventarios, despache órdenes y gestione la facturación de forma ágil y centralizada.</p>
+    </div>
+</div>
 
-<h2>Módulos</h2>
-
-<ul>
-    <li><a href="/productos">Productos</a></li>
-    <li><a href="/clientes">Clientes</a></li>
-    <li>
-<a href="/proveedores">Proveedores</a>
-</li>
-    <li><a href="/inventario">Inventario</a></li>
-    
-    
-<li><a href="/facturas">Facturas</a></li>
-
-<li><a href="/ordenes">Órdenes de Pedido</a></li>
-</ul>
-
-</body>
-</html>
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-start border-primary border-4">
+            <div class="card-body">
+                <h5 class="card-title text-muted fw-bold"><i class="bi bi-box-seam"></i> PRODUCTOS</h5>
+                <p class="card-text">Catálogo general, precios y códigos de barra.</p>
+                <a href="{{ url_for('productos.listar') }}" class="btn btn-sm btn-outline-primary">Ir a catálogo</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-start border-success border-4">
+            <div class="card-body">
+                <h5 class="card-title text-muted fw-bold"><i class="bi bi-boxes"></i> INVENTARIO</h5>
+                <p class="card-text">Niveles de stock por sedes y alertas críticas.</p>
+                <a href="{{ url_for('inventario.listar') }}" class="btn btn-sm btn-outline-success">Ver existencias</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-start border-warning border-4">
+            <div class="card-body">
+                <h5 class="card-title text-muted fw-bold"><i class="bi bi-receipt"></i> FACTURACIÓN</h5>
+                <p class="card-text">Historial inmutable de cajas y auditoría de ventas.</p>
+                <a href="{{ url_for('facturas.listar') }}" class="btn btn-sm btn-outline-warning text-dark">Ver ventas</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 shadow-sm border-start border-danger border-4">
+            <div class="card-body">
+                <h5 class="card-title text-muted fw-bold"><i class="bi bi-person-badge"></i> EMPLEADOS</h5>
+                <p class="card-text">Nómina, cargos y sucursales asignadas.</p>
+                <a href="{{ url_for('empleados.listar') }}" class="btn btn-sm btn-outline-danger">Administrar personal</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

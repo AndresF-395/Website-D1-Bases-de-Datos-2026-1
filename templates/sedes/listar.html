@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_pagination %}
+
+{% block title %}Red de Tiendas - D1{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-secondary fw-bold"><i class="bi bi-geo-alt-fill"></i> Red de Tiendas y Sedes</h2>
+    <button class="btn btn-primary shadow-sm disabled"><i class="bi bi-plus-circle"></i> Nueva Sede (Solo Admin)</button>
+</div>
+
+<div class="card p-3 mb-4 shadow-sm bg-white border-0">
+    <form method="GET" action="{{ url_for('sedes.listar') }}" class="row g-3 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control border-start-0" placeholder="Buscar por Nombre de Sede o Ciudad..." value="{{ busqueda or '' }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="orden_columna" class="form-select">
+                <option value="nombre_sede" {% if orden_columna == 'nombre_sede' %}selected{% endif %}>Nombre de Sede</option>
+                <option value="ciudad_sede" {% if orden_columna == 'ciudad_sede' %}selected{% endif %}>Ciudad</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="orden_direccion" class="form-select">
+                <option value="ASC" {% if orden_direccion == 'ASC' %}selected{% endif %}>Ascendente</option>
+                <option value="DESC" {% if orden_direccion == 'DESC' %}selected{% endif %}>Descendente</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-dark w-100"><i class="bi bi-funnel"></i></button>
+        </div>
+    </form>
+</div>
+
+<div class="table-responsive border-0">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col" style="width: 8%;">ID</th>
+                <th scope="col" style="width: 25%;">Nombre de Sede</th>
+                <th scope="col">Dirección</th>
+                <th scope="col">Ciudad</th>
+                <th scope="col" class="text-center" style="width: 15%;">Personal Asignado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sede in sedes %}
+            <tr>
+                <td><span class="badge bg-secondary">#{{ sede.id_sede }}</span></td>
+                <td class="fw-bold text-dark">{{ sede.nombre_sede }}</td>
+                <td>{{ sede.direccion_sede }}</td>
+                <td>{{ sede.ciudad_sede }}</td>
+                <td class="text-center">
+                    <a href="{{ url_for('empleados.listar', busqueda=sede.nombre_sede) }}" class="btn btn-sm btn-outline-info" title="Ver empleados de esta sede">
+                        <i class="bi bi-people"></i> Ver Equipo
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center py-4 text-muted">No se encontraron sedes registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{{ render_pagination(page, total_paginas, 'sedes.listar', busqueda, orden_columna, orden_direccion) }}
+
+{% endblock %}

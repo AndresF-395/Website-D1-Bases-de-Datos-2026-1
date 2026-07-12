@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+<!-- Importamos las macros -->
+{% from 'macros.html' import render_pagination %}
+
+{% block title %}Listado de Proveedores - D1{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-secondary fw-bold"><i class="bi bi-truck"></i> Administración de Proveedores</h2>
+    <a href="{{ url_for('proveedores.nuevo') }}" class="btn btn-primary shadow-sm"><i class="bi bi-plus-circle"></i> Nuevo Proveedor</a>
+</div>
+
+<!-- Filtros de Búsqueda -->
+<div class="card p-3 mb-4 shadow-sm bg-white border-0">
+    <form method="GET" action="{{ url_for('proveedores.listar') }}" class="row g-3 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control border-start-0" placeholder="Buscar por Nombre, NIT o Contacto..." value="{{ busqueda or '' }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="orden_columna" class="form-select">
+                <option value="nombre_proveedor" {% if orden_columna == 'nombre_proveedor' %}selected{% endif %}>Razón Social</option>
+                <option value="nit_proveedor" {% if orden_columna == 'nit_proveedor' %}selected{% endif %}>NIT</option>
+                <option value="ciudad_proveedor" {% if orden_columna == 'ciudad_proveedor' %}selected{% endif %}>Ciudad</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="orden_direccion" class="form-select">
+                <option value="ASC" {% if orden_direccion == 'ASC' %}selected{% endif %}>Ascendente</option>
+                <option value="DESC" {% if orden_direccion == 'DESC' %}selected{% endif %}>Descendente</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-dark w-100"><i class="bi bi-funnel"></i></button>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Resultados -->
+<div class="table-responsive border-0">
+    <table class="table table-hover table-striped align-middle mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col" style="width: 15%;">NIT</th>
+                <th scope="col">Razón Social</th>
+                <th scope="col">Datos de Contacto</th>
+                <th scope="col">Ubicación</th>
+                <th scope="col" class="text-center" style="width: 12%;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for proveedor in proveedores %}
+            <tr>
+                <td><span class="badge bg-secondary border">{{ proveedor.nit_proveedor }}</span></td>
+                <td class="fw-bold">{{ proveedor.nombre_proveedor }}</td>
+                <td>
+                    <i class="bi bi-telephone text-muted"></i> {{ proveedor.telefono_proveedor or 'N/A' }}<br>
+                    <i class="bi bi-envelope text-muted"></i> <small>{{ proveedor.correo_proveedor or 'N/A' }}</small>
+                </td>
+                <td>{{ proveedor.ciudad_proveedor }}<br><small class="text-muted">{{ proveedor.direccion_proveedor }}</small></td>
+                <td class="text-center">
+                    <div class="btn-group" role="group">
+                        <a href="{{ url_for('proveedores.editar', nit_proveedor=proveedor.nit_proveedor) }}" class="btn btn-sm btn-outline-warning" title="Editar"><i class="bi bi-pencil"></i></a>
+                        <form action="{{ url_for('proveedores.eliminar', nit_proveedor=proveedor.nit_proveedor) }}" method="POST" onsubmit="return confirm('¿Está seguro de eliminar este proveedor? Sus registros en productos podrían verse afectados.');" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                    No se encontraron proveedores.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Llamada a la Macro de Paginación -->
+{{ render_pagination(page, total_paginas, 'proveedores.listar', busqueda, orden_columna, orden_direccion) }}
+
+{% endblock %}

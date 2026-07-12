@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle Orden ORD-{{ orden.id_orden_pedido }} - D1{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-secondary fw-bold"><i class="bi bi-file-earmark-text"></i> Detalle de Orden de Pedido</h2>
+    <div>
+        <button onclick="window.print()" class="btn btn-secondary shadow-sm"><i class="bi bi-printer"></i> Imprimir</button>
+        <a href="{{ url_for('ordenes.listar') }}" class="btn btn-outline-dark shadow-sm">Volver al Historial</a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm border-0 print-container">
+            <div class="card-header bg-dark text-white p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-0 text-warning"><i class="bi bi-shop"></i> Tiendas D1</h3>
+                        <small>Orden de Compra Institucional</small>
+                    </div>
+                    <div class="text-end">
+                        <h4 class="mb-0">ORD-{{ orden.id_orden_pedido }}</h4>
+                        <small>Emitida: {{ orden.fecha_pedido }}</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body p-4 bg-white">
+                <div class="row mb-4 border-bottom pb-3">
+                    <div class="col-sm-6">
+                        <h6 class="text-muted fw-bold mb-2">Proveedor Destinatario:</h6>
+                        <div><strong>Razón Social:</strong> {{ orden.nombre_proveedor }}</div>
+                        <div><strong>NIT:</strong> {{ orden.nit_proveedor }}</div>
+                    </div>
+                    <div class="col-sm-6 text-end">
+                        <h6 class="text-muted fw-bold mb-2">Información Interna:</h6>
+                        <div><strong>Sede Destino:</strong> {{ orden.nombre_sede }}</div>
+                        <div><strong>Lugar de Entrega:</strong> {{ orden.lugar_entrega }}</div>
+                    </div>
+                </div>
+
+                <div class="table-responsive mb-4">
+                    <table class="table table-sm table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th class="text-center">Cant. / Peso</th>
+                                <th class="text-end">Costo Unitario</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in detalles %}
+                            <tr>
+                                <td><small class="text-muted font-monospace">{{ item.codigo_de_barras }}</small></td>
+                                <td>{{ item.nombre_producto }}</td>
+                                <td class="text-center">{{ item.cantidad }}</td>
+                                <td class="text-end">${{ "{:,.2f}".format(item.precio_compra_unitario) }}</td>
+                                <td class="text-end fw-bold">${{ "{:,.2f}".format(item.cantidad * item.precio_compra_unitario) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-md-5">
+                        <table class="table table-sm table-borderless">
+                            <tr class="fs-5 text-danger border-top border-2 border-dark">
+                                <th>COSTO TOTAL:</th>
+                                <!-- Aquí está la corrección principal: orden.total en lugar de orden.total_orden -->
+                                <th class="text-end fw-bold">${{ "{:,.2f}".format(orden.total) }}</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-5 text-muted small">
+                    <p class="mb-0">Documento interno de reabastecimiento de inventario.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        body * { visibility: hidden; }
+        .print-container, .print-container * { visibility: visible; }
+        .print-container { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
+        .navbar, .sidebar-wrapper, footer, .btn { display: none !important; }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_pagination %}
+
+{% block title %}Catálogo de Productos - D1{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-secondary fw-bold"><i class="bi bi-box-seam"></i> Catálogo de Productos</h2>
+    <a href="{{ url_for('productos.nuevo') }}" class="btn btn-primary shadow-sm"><i class="bi bi-plus-circle"></i> Nuevo Producto</a>
+</div>
+
+<!-- Filtros de Búsqueda -->
+<div class="card p-3 mb-4 shadow-sm bg-white border-0">
+    <form method="GET" action="{{ url_for('productos.listar') }}" class="row g-3 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control border-start-0" placeholder="Buscar por Nombre, Código de Barras o Tipo..." value="{{ busqueda or '' }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="orden_columna" class="form-select">
+                <option value="nombre_producto" {% if orden_columna == 'nombre_producto' %}selected{% endif %}>Nombre del Producto</option>
+                <option value="precio_venta" {% if orden_columna == 'precio_venta' %}selected{% endif %}>Precio de Venta</option>
+                <option value="tipo_de_producto" {% if orden_columna == 'tipo_de_producto' %}selected{% endif %}>Categoría</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="orden_direccion" class="form-select">
+                <option value="ASC" {% if orden_direccion == 'ASC' %}selected{% endif %}>Ascendente</option>
+                <option value="DESC" {% if orden_direccion == 'DESC' %}selected{% endif %}>Descendente</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-dark w-100"><i class="bi bi-funnel"></i></button>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Resultados -->
+<div class="table-responsive border-0">
+    <table class="table table-hover table-striped align-middle mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col" style="width: 12%;">Código</th>
+                <th scope="col">Producto</th>
+                <th scope="col">Categoría</th>
+                <th scope="col">Proveedor</th>
+                <th scope="col">Precio Venta</th>
+                <th scope="col" class="text-center">Estado</th>
+                <th scope="col" class="text-center" style="width: 10%;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+            <tr>
+                <td><span class="font-monospace text-muted">{{ producto.codigo_de_barras }}</span></td>
+                <td class="fw-bold">
+                    {{ producto.nombre_producto }}
+                    <br><small class="text-muted fw-normal">{{ producto.unidad_medida }}</small>
+                </td>
+                <td><span class="badge bg-info text-dark">{{ producto.tipo_de_producto }}</span></td>
+                <td><small>{{ producto.nombre_proveedor }}</small></td>
+                <td class="text-success fw-bold">${{ "{:,.2f}".format(producto.precio_venta) }}</td>
+                <td class="text-center">
+                    {% if producto.activo %}
+                        <span class="badge bg-success">Activo</span>
+                    {% else %}
+                        <span class="badge bg-danger">Inactivo</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    <div class="btn-group" role="group">
+                        <a href="{{ url_for('productos.editar', id_producto=producto.id_producto) }}" class="btn btn-sm btn-outline-warning" title="Editar"><i class="bi bi-pencil"></i></a>
+                        {% if producto.activo %}
+                        <form action="{{ url_for('productos.eliminar', id_producto=producto.id_producto) }}" method="POST" onsubmit="return confirm('¿Está seguro de desactivar este producto? No aparecerá en ventas nuevas.');" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Desactivar"><i class="bi bi-trash"></i></button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                    No se encontraron productos.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Paginación -->
+{{ render_pagination(page, total_paginas, 'productos.listar', busqueda, orden_columna, orden_direccion) }}
+
+{% endblock %}

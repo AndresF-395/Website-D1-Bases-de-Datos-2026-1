@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_pagination %}
+
+{% block title %}Historial de Órdenes - D1{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-secondary fw-bold"><i class="bi bi-cart-check"></i> Órdenes de Pedido a Proveedores</h2>
+    <a href="{{ url_for('ordenes.nuevo') }}" class="btn btn-primary shadow-sm"><i class="bi bi-plus-circle"></i> Crear Nueva Orden</a>
+</div>
+
+<!-- Filtros de Búsqueda -->
+<div class="card p-3 mb-4 shadow-sm bg-white border-0">
+    <form method="GET" action="{{ url_for('ordenes.listar') }}" class="row g-3 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control border-start-0" placeholder="Buscar por N° Orden o NIT de Proveedor..." value="{{ busqueda or '' }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="orden_columna" class="form-select">
+                <option value="fecha_orden" {% if orden_columna == 'fecha_orden' %}selected{% endif %}>Fecha de Orden</option>
+                <option value="id_orden" {% if orden_columna == 'id_orden' %}selected{% endif %}>N° Orden</option>
+                <option value="total_orden" {% if orden_columna == 'total_orden' %}selected{% endif %}>Total</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="orden_direccion" class="form-select">
+                <option value="DESC" {% if orden_direccion == 'DESC' %}selected{% endif %}>Más Recientes</option>
+                <option value="ASC" {% if orden_direccion == 'ASC' %}selected{% endif %}>Más Antiguas</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-dark w-100"><i class="bi bi-funnel"></i></button>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Resultados -->
+<div class="table-responsive border-0">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col" style="width: 12%;">N° Orden</th>
+                <th scope="col">Fecha de Solicitud</th>
+                <th scope="col">Proveedor</th>
+                <th scope="col">Generada por</th>
+                <th scope="col" class="text-end">Costo Total Estimado</th>
+                <th scope="col" class="text-center" style="width: 10%;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for orden in ordenes %}
+            <tr>
+                <td><span class="badge bg-secondary fs-6 fw-normal">ORD-{{ orden.id_orden_pedido }}</span></td>
+                <td>{{ orden.fecha_pedido }}</td>
+                <td>
+                    <span class="fw-bold">{{ orden.nombre_proveedor }}</span><br>
+                    <small class="text-muted">NIT: {{ orden.nit_proveedor }}</small>
+                </td>
+                <td><small>{{ orden.nombre_sede }}</small></td>
+                <td class="text-end fw-bold text-danger">${{ "{:,.2f}".format(orden.total) }}</td>
+                <td class="text-center">
+                    <!-- Se corrige el nombre de la variable id_orden_pedido -->
+                    <a href="{{ url_for('ordenes.detalles', id_orden_pedido=orden.id_orden_pedido) }}" class="btn btn-sm btn-outline-info" title="Ver Detalles">
+                        <i class="bi bi-eye"></i> Detalles
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="text-center py-4 text-muted">No se encontraron órdenes de pedido registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{{ render_pagination(page, total_paginas, 'ordenes.listar', busqueda, orden_columna, orden_direccion) }}
+
+{% endblock %}

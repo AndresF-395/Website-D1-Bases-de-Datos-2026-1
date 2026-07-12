@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Proveedor - D1{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white fw-bold py-3">
+                <i class="bi bi-pencil-square"></i> Editar Proveedor: {{ proveedor.nombre_proveedor }}
+            </div>
+            <div class="card-body p-4 bg-white">
+                <form method="POST" action="{{ url_for('proveedores.editar', nit_proveedor=proveedor.nit_proveedor) }}">
+                    
+                    <h5 class="text-warning border-bottom pb-2 mb-3"><i class="bi bi-building"></i> Información Principal</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">NIT</label>
+                            <input type="text" class="form-control bg-light" value="{{ proveedor.nit_proveedor }}" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">RUT</label>
+                            <input type="number" name="rut" class="form-control" value="{{ proveedor.rut or '' }}" autocomplete="off">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Razón Social *</label>
+                            <input type="text" name="nombre_proveedor" class="form-control" value="{{ proveedor.nombre_proveedor }}" required autocomplete="off">
+                        </div>
+                    </div>
+
+                    <h5 class="text-warning border-bottom pb-2 mb-3"><i class="bi bi-diagram-3"></i> Detalles Operativos y Comerciales</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Tipo de Proveedor</label>
+                            <select name="tipo_proveedor" class="form-select">
+                                <option value="Bienes" {% if proveedor.tipo_proveedor == 'Bienes' %}selected{% endif %}>Bienes</option>
+                                <option value="Servicios" {% if proveedor.tipo_proveedor == 'Servicios' %}selected{% endif %}>Servicios</option>
+                                <option value="Insumos" {% if proveedor.tipo_proveedor == 'Insumos' %}selected{% endif %}>Insumos</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Tiempo Entrega (Días)</label>
+                            <input type="number" name="tiempo_entrega_promedio" class="form-control" min="0" value="{{ proveedor.tiempo_entrega_promedio or 0 }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Calificación (1 a 5)</label>
+                            <input type="number" name="calificacion" class="form-control" min="1" max="5" value="{{ proveedor.calificacion or 5 }}">
+                        </div>
+                    </div>
+
+                    <h5 class="text-warning border-bottom pb-2 mb-3"><i class="bi bi-person-lines-fill"></i> Contactos de la Empresa</h5>
+                    <div class="row g-3 mb-2">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Teléfono General</label>
+                            <input type="text" name="telefono_proveedor" class="form-control" value="{{ proveedor.telefono_proveedor or '' }}" autocomplete="off">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Correo Electrónico</label>
+                            <input type="email" name="correo_proveedor" class="form-control" value="{{ proveedor.correo_proveedor or '' }}" autocomplete="off">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Dirección Empresa</label>
+                            <input type="text" name="direccion_empresa" class="form-control" value="{{ proveedor.direccion_empresa or '' }}" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Contacto Comercial</label>
+                            <input type="text" name="contacto_comercial" class="form-control" value="{{ proveedor.contacto_comercial or '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Contacto Cartera</label>
+                            <input type="text" name="contacto_cartera" class="form-control" value="{{ proveedor.contacto_cartera or '' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Contacto Logístico</label>
+                            <input type="text" name="contacto_logistico" class="form-control" value="{{ proveedor.contacto_logistico or '' }}">
+                        </div>
+                    </div>
+
+                    <h5 class="text-warning border-bottom pb-2 mb-3"><i class="bi bi-cash-coin"></i> Información Financiera</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Certificación Bancaria</label>
+                            <input type="text" name="certificacion_bancaria" class="form-control" value="{{ proveedor.certificacion_bancaria or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Condiciones de Pago</label>
+                            <input type="text" name="condiciones_pago" class="form-control" value="{{ proveedor.condiciones_pago or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{{ url_for('proveedores.listar') }}" class="btn btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-warning"><i class="bi bi-arrow-clockwise"></i> Actualizar Proveedor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

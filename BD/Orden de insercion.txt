@@ -1,0 +1,15 @@
+Departamentos
+Tipos_Turno
+Ciudad
+Cliente
+Proveedor
+Productos
+Productos_Por_Proveedor
+Sedes
+Empleados
+Inventario
+Factura
+Detalle_Factura
+Turnos
+Ordenes_Pedidos
+Detalles_Pedidos

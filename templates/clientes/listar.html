@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Listado de Clientes - D1{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-secondary fw-bold"><i class="bi bi-people-fill"></i> Administración de Clientes</h2>
+    <a href="{{ url_for('clientes.nuevo') }}" class="btn btn-primary shadow-sm"><i class="bi bi-person-plus-fill"></i> Registrar Cliente</a>
+</div>
+
+<!-- Filtros de Búsqueda y Ordenamiento -->
+<div class="card p-3 mb-4 shadow-sm bg-white">
+    <form method="GET" action="{{ url_for('clientes.listar') }}" class="row g-3 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control" placeholder="Buscar por Nombre, Apellido o Cédula..." value="{{ busqueda or '' }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="orden_columna" class="form-select">
+                <option value="id_cliente" {% if orden_columna == 'id_cliente' %}selected{% endif %}>ID Interno</option>
+                <option value="nombres" {% if orden_columna == 'nombres' %}selected{% endif %}>Nombre</option>
+                <option value="apellidos" {% if orden_columna == 'apellidos' %}selected{% endif %}>Apellido</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="orden_direccion" class="form-select">
+                <option value="ASC" {% if orden_direccion == 'ASC' %}selected{% endif %}>Ascendente</option>
+                <option value="DESC" {% if orden_direccion == 'DESC' %}selected{% endif %}>Descendente</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-dark w-100">Filtrar</button>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Resultados -->
+<div class="table-responsive">
+    <table class="table table-hover table-striped align-middle mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col" style="width: 8%;">ID</th>
+                <th scope="col">Documento</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Contacto</th>
+                <th scope="col">Dirección de Residencia</th>
+                <th scope="col" class="text-center" style="width: 12%;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+            <tr>
+                <td><span class="badge bg-secondary">#{{ cliente.id_cliente }}</span></td>
+                <td><small class="text-muted">{{ cliente.tipo_documento }}</small><br><strong>{{ cliente.numero_documento }}</strong></td>
+                <td>{{ cliente.nombres }} {{ cliente.apellidos }}</td>
+                <td>
+                    <i class="bi bi-telephone text-muted"></i> {{ cliente.telefono_cliente or 'N/A' }}<br>
+                    <i class="bi bi-envelope text-muted"></i> <small>{{ cliente.correo_cliente or 'N/A' }}</small>
+                </td>
+                <td>{{ cliente.direccion_residencia or 'No especificada' }}</td>
+                <td class="text-center">
+                    <div class="btn-group" role="group">
+                        <a href="{{ url_for('clientes.editar', id_cliente=cliente.id_cliente) }}" class="btn btn-sm btn-outline-warning" title="Editar"><i class="bi bi-pencil"></i></a>
+                        <form action="{{ url_for('clientes.eliminar', id_cliente=cliente.id_cliente) }}" method="POST" onsubmit="return confirm('¿Está seguro de eliminar este cliente?');" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="text-center py-4 text-muted">No se encontraron clientes que coincidan con la búsqueda.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Paginador Dinámico (Límite estricto de 100 registros por bloque) -->
+{% if total_paginas > 1 %}
+<nav class="mt-4" aria-label="Navegación de páginas masivas">
+    <ul class="pagination pagination-sm justify-content-center">
+        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('clientes.listar', page=page-1, busqueda=busqueda, orden_columna=orden_columna, orden_direccion=orden_direccion) }}">Anterior</a>
+        </li>
+        
+        {% for p in range(1, total_paginas + 1) %}
+            {% if p == page %}
+                <li class="page-item active" aria-current="page"><span class="page-link">{{ p }}</span></li>
+            {% elif p <= 5 or p >= total_paginas - 2 or (p >= page - 2 and p <= page + 2) %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('clientes.listar', page=p, busqueda=busqueda, orden_columna=orden_columna, orden_direccion=orden_direccion) }}">{{ p }}</a>
+                </li>
+            {% elif p == 6 or p == total_paginas - 3 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+        {% endfor %}
+
+        <li class="page-item {% if page == total_paginas %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('clientes.listar', page=page+1, busqueda=busqueda, orden_columna=orden_columna, orden_direccion=orden_direccion) }}">Siguiente</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

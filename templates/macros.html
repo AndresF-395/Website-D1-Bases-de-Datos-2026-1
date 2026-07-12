@@ -1,0 +1,30 @@
+{% macro render_pagination(page, total_paginas, endpoint, busqueda, orden_columna, orden_direccion) %}
+    {% if total_paginas > 1 %}
+    <nav class="mt-4" aria-label="Navegación de páginas masivas">
+        <ul class="pagination pagination-sm justify-content-center">
+            <!-- Botón Anterior -->
+            <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for(endpoint, page=page-1, busqueda=busqueda, orden_columna=orden_columna, orden_direccion=orden_direccion) }}">Anterior</a>
+            </li>
+            
+            <!-- Números de Página -->
+            {% for p in range(1, total_paginas + 1) %}
+                {% if p == page %}
+                    <li class="page-item active" aria-current="page"><span class="page-link">{{ p }}</span></li>
+                {% elif p <= 3 or p >= total_paginas - 2 or (p >= page - 2 and p <= page + 2) %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for(endpoint, page=p, busqueda=busqueda, orden_columna=orden_columna, orden_direccion=orden_direccion) }}">{{ p }}</a>
+                    </li>
+                {% elif p == 4 or p == total_paginas - 3 %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Botón Siguiente -->
+            <li class="page-item {% if page == total_paginas %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for(endpoint, page=page+1, busqueda=busqueda, orden_columna=orden_columna, orden_direccion=orden_direccion) }}">Siguiente</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+{% endmacro %}

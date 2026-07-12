@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_pagination %}
+
+{% block title %}Historial de Facturas - D1{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-secondary fw-bold"><i class="bi bi-receipt"></i> Historial de Facturación</h2>
+    <a href="{{ url_for('facturas.nuevo') }}" class="btn btn-primary shadow-sm"><i class="bi bi-cart-plus"></i> Nueva Venta</a>
+</div>
+
+<!-- Filtros de Búsqueda -->
+<div class="card p-3 mb-4 shadow-sm bg-white border-0">
+    <form method="GET" action="{{ url_for('facturas.listar') }}" class="row g-3 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                <input type="text" name="busqueda" class="form-control border-start-0" placeholder="Buscar por N° Factura o Documento del Cliente..." value="{{ busqueda or '' }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="orden_columna" class="form-select">
+                <option value="fecha_factura" {% if orden_columna == 'fecha_factura' %}selected{% endif %}>Fecha de Venta</option>
+                <option value="numero_factura" {% if orden_columna == 'numero_factura' %}selected{% endif %}>N° Factura</option>
+                <option value="total_factura" {% if orden_columna == 'total_factura' %}selected{% endif %}>Total</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="orden_direccion" class="form-select">
+                <option value="DESC" {% if orden_direccion == 'DESC' %}selected{% endif %}>Más Recientes</option>
+                <option value="ASC" {% if orden_direccion == 'ASC' %}selected{% endif %}>Más Antiguas</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-dark w-100"><i class="bi bi-funnel"></i></button>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Resultados -->
+<div class="table-responsive border-0">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col" style="width: 15%;">N° Factura</th>
+                <th scope="col">Fecha y Hora</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Atendido por</th>
+                <th scope="col" class="text-end">Total Facturado</th>
+                <th scope="col" class="text-center" style="width: 10%;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for factura in facturas %}
+            <tr>
+                <td><span class="badge bg-primary text-wrap fs-6 fw-normal">{{ factura.numero_factura_oficial }}</span></td>
+                <td>{{ factura.fecha_emision }}</td>
+                <td>
+                    {{ factura.cliente_nombre }}<br>
+                    <small class="text-muted">CC: {{ factura.numero_documento }}</small>
+                </td>
+                <td><small>{{ factura.empleado_nombre }}</small></td>
+                <td class="text-end fw-bold text-success">${{ "{:,.2f}".format(factura.total_factura) }}</td>
+                <td class="text-center">
+                    <a href="{{ url_for('facturas.detalles', id_factura=factura.id_factura) }}" class="btn btn-sm btn-outline-info" title="Ver Detalles">
+                        <i class="bi bi-eye"></i> Detalles
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="text-center py-4 text-muted">No se encontraron facturas emitidas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{{ render_pagination(page, total_paginas, 'facturas.listar', busqueda, orden_columna, orden_direccion) }}
+
+{% endblock %}

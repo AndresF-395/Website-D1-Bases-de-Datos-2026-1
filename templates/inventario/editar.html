@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Ajuste de Stock - D1{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white fw-bold py-3">
+                <i class="bi bi-sliders"></i> Ajuste de Stock
+            </div>
+            <div class="card-body p-4 bg-white">
+<form method="POST" action="{{ url_for('inventario.editar', id_inventario=inventario.id_inventario) }}">
+    
+    <input type="hidden" name="id_sede" value="{{ inventario.id_sede }}">
+    <input type="hidden" name="id_producto" value="{{ inventario.id_producto }}">
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <label class="form-label fw-bold small text-muted">Sede</label>
+            <input type="text" class="form-control bg-light" value="{{ inventario.nombre_sede }}" readonly disabled>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label fw-bold small text-muted">Producto</label>
+            <input type="text" class="form-control bg-light" value="{{ inventario.nombre_producto }}" readonly disabled>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <label class="form-label fw-bold small text-muted">Stock Físico Disponible *</label>
+            <input type="number" min="0" step="1" name="cantidad_disponible" class="form-control" value="{{ inventario.cantidad_disponible }}" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-bold small text-muted">Stock Mínimo de Seguridad</label>
+            <input type="number" min="0" step="1" name="stock_minimo" class="form-control" value="{{ inventario.stock_minimo or 10 }}" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-bold small text-muted">Stock Máximo</label>
+            <input type="number" min="1" step="1" name="stock_maximo" class="form-control" value="{{ inventario.stock_maximo or 1000 }}" required>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+        <a href="{{ url_for('inventario.listar') }}" class="btn btn-outline-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-warning"><i class="bi bi-arrow-clockwise"></i> Guardar Cambios</button>
+    </div>
+</form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

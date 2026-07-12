@@ -90,7 +90,7 @@ CREATE TABLE Proveedor(
     correo_proveedor VARCHAR(100) UNIQUE,
     --Nuevos atributos
     rut VARCHAR(50),
-    certificacion_bancaria VARCHAR(150),
+    certificacion_bancaria VARCHAR(500),
     tipo_proveedor VARCHAR(50),
     tiempo_entrega_promedio INT CHECK(tiempo_entrega_promedio >= 0), -- Expresado en días
     contacto_comercial VARCHAR(100),
@@ -360,11 +360,8 @@ CREATE TABLE Ordenes_Pedidos(
     DEFAULT 0 CHECK(total>=0),
 
     lugar_entrega VARCHAR(150),
-    codigo_producto INT, -- FK hacia Productos
     
-    FOREIGN KEY(codigo_producto)
-    REFERENCES Productos(id_producto),
-
+    
     FOREIGN KEY(nit_proveedor)
     REFERENCES Proveedor(nit_proveedor),
 

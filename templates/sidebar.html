@@ -1,0 +1,55 @@
+<div class="bg-light border-end vh-100 d-flex flex-column" id="sidebar-wrapper" style="width: 250px; position: fixed; top: 56px; overflow-y: auto;">
+    <div class="list-group list-group-flush mt-3 mb-5 pb-5">
+        <a href="{{ url_for('dashboard.index') }}" class="list-group-item list-group-item-action bg-light text-dark fw-bold border-0 p-3">
+            <i class="bi bi-house-door-fill me-2 text-primary"></i> Dashboard
+        </a>
+        
+        <div class="text-muted small fw-bold text-uppercase px-3 mt-3 mb-1">Módulos Principales</div>
+        
+        <a href="{{ url_for('clientes.listar') }}" class="list-group-item list-group-item-action bg-light border-0 py-2">
+            <i class="bi bi-people me-2"></i> Clientes
+        </a>
+        <a href="{{ url_for('proveedores.listar') }}" class="list-group-item list-group-item-action bg-light border-0 py-2">
+            <i class="bi bi-truck me-2"></i> Proveedores
+        </a>
+        <a href="{{ url_for('productos.listar') }}" class="list-group-item list-group-item-action bg-light border-0 py-2">
+            <i class="bi bi-box-seam me-2"></i> Productos
+        </a>
+        <a href="{{ url_for('inventario.listar') }}" class="list-group-item list-group-item-action bg-light border-0 py-2">
+            <i class="bi bi-boxes me-2"></i> Inventario
+        </a>
+        
+        <div class="text-muted small fw-bold text-uppercase px-3 mt-3 mb-1">Operaciones</div>
+        
+        <a href="{{ url_for('facturas.listar') }}" class="list-group-item list-group-item-action bg-light border-0 py-2">
+            <i class="bi bi-receipt me-2"></i> Facturación
+        </a>
+        <a href="{{ url_for('ordenes.listar') }}" class="list-group-item list-group-item-action bg-light border-0 py-2">
+            <i class="bi bi-cart-check me-2"></i> Órdenes de Pedido
+        </a>
+
+        <div class="text-muted small fw-bold text-uppercase px-3 mt-3 mb-1">Administración</div>
+
+        <!-- Enlace correcto para Personal / Empleados -->
+<a href="{{ url_for('empleados.listar') }}" class="list-group-item list-group-item-action">
+    <i class="bi bi-person-badge"></i> Personal
+</a>
+
+<!-- Enlace correcto para Sedes -->
+<a href="{{ url_for('sedes.listar') }}" class="list-group-item list-group-item-action">
+    <i class="bi bi-geo-alt"></i> Sedes
+</a>
+    </div>
+</div>
+
+<!-- Estructura Offcanvas para vista móvil -->
+<div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+    <div class="offcanvas-header bg-dark text-white">
+        <h5 class="offcanvas-title" id="sidebarOffcanvasLabel"><i class="bi bi-shop text-warning"></i> Tiendas D1</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <!-- El contenido se clona mediante JS o puede dejarse simple -->
+        <p class="p-3 text-muted">Use el menú en versión escritorio para una experiencia completa.</p>
+    </div>
+</div>

@@ -1,0 +1,8 @@
+SECRET_KEY=
+FLASK_ENV=development
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=Website_D1
+DB_USER=
+DB_PASSWORD=
