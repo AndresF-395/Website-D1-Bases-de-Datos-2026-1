@@ -1,124 +1,50 @@
 {% extends 'base.html' %}
 
-{% block title %}Panel de Control - D1{% endblock %}
+{% block title %}Inicio - Panel de Administración D1{% endblock %}
 
 {% block content %}
-<div class="p-5 mb-4 bg-light rounded-3 border shadow-sm">
-    <div class="container-fluid py-3">
-        <h1 class="display-5 fw-bold text-dark">Bienvenido al Sistema de Gestión D1</h1>
-        <p class="col-md-8 fs-4 text-muted">Consulte inventarios, despache órdenes y gestione la facturación de forma ágil y centralizada.</p>
+<div class="row mt-4">
+    <div class="col-md-12 text-center">
+        <h1 class="display-5 fw-bold text-dark mb-3">
+            <i class="bi bi-shop text-danger"></i> Bienvenido al Sistema D1
+        </h1>
+        <p class="lead text-muted">
+            Panel de administración de inventario, facturación y personal.
+        </p>
+        <hr class="my-4">
     </div>
 </div>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Logístico - Tiendas D1</title>
-    
 
-    <style>
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-
-        .header {
-            background-color: #E30613; /* Rojo D1 */
-            color: white;
-            text-align: center;
-            padding: 30px 20px;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .header h1 {
-            margin: 0;
-            font-size: 2.5em;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0px 4px 15px rgba(0,0,0,0.05);
-        }
-
-        h2 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        /* Convertimos la lista en una cuadrícula de botones */
-        ul {
-            list-style-type: none;
-            padding: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        /* Diseño de los botones */
-        li a {
-            display: block;
-            text-align: center;
-            background-color: white;
-            color: #E30613;
-            text-decoration: none;
-            padding: 20px;
-            font-size: 1.1em;
-            font-weight: bold;
-            border: 2px solid #E30613;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-       
-        li a:hover {
-            background-color: #FFD400; /* Amarillo D1 */
-            color: #000;
-            border-color: #FFD400;
-            transform: translateY(-3px);
-            box-shadow: 0px 5px 15px rgba(255, 212, 0, 0.4);
-        }
-
-        .logo-d1 {
-            width: 100px;        
-            height: auto;        
-            margin-bottom: 10px; 
-            display: block;      
-            margin-left: auto;   
-            margin-right: auto;  
-        }
-
-
-    </style>
-</head>
-
-<body>
-
-<h1>Gestor Empresarial</h1>
-
-<h2>Módulos</h2>
-
-<ul>
-    <li><a href="/productos">Productos</a></li>
-    <li><a href="/clientes">Clientes</a></li>
-    <li>
-<a href="/proveedores">Proveedores</a>
-</li>
-    <li><a href="/inventario">Inventario</a></li>
-    
-    
-<li><a href="/facturas">Facturas</a></li>
-
-<li><a href="/ordenes">Órdenes de Pedido</a></li>
-</ul>
-
-</body>
-</html>
+<div class="row g-4 mt-2 justify-content-center">
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm border-0 h-100">
+            <div class="card-body">
+                <i class="bi bi-box-seam display-4 text-primary mb-3"></i>
+                <h5 class="card-title fw-bold">Productos</h5>
+                <p class="card-text small text-muted">Gestiona el catálogo de artículos.</p>
+                <a href="{{ url_for('productos.listar') }}" class="btn btn-outline-primary btn-sm">Ir a Productos</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm border-0 h-100">
+            <div class="card-body">
+                <i class="bi bi-receipt display-4 text-success mb-3"></i>
+                <h5 class="card-title fw-bold">Facturación</h5>
+                <p class="card-text small text-muted">Registra y consulta ventas.</p>
+                <a href="{{ url_for('facturas.listar') }}" class="btn btn-outline-success btn-sm">Ir a Facturas</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm border-0 h-100">
+            <div class="card-body">
+                <i class="bi bi-truck display-4 text-warning mb-3"></i>
+                <h5 class="card-title fw-bold">Proveedores</h5>
+                <p class="card-text small text-muted">Administra tus aliados comerciales.</p>
+                <a href="{{ url_for('proveedores.listar') }}" class="btn btn-outline-warning btn-sm">Ir a Proveedores</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
