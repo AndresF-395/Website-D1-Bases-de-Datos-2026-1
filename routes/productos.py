@@ -33,13 +33,34 @@ def listar():
 def nuevo():
     if request.method == 'POST':
         try:
+            # Convertimos el formulario en un diccionario mutable
             datos = request.form.to_dict()
+            
+            # 1. Saneamiento de campos opcionales y fechas
             datos['fecha_vencimiento'] = datos.get('fecha_vencimiento') or None
+            
+            # 2. Casteo explícito a tipos numéricos requeridos por la BD
+            datos['precio_compra'] = float(datos['precio_compra']) if datos.get('precio_compra') else 0.0
+            datos['precio_venta'] = float(datos['precio_venta']) if datos.get('precio_venta') else 0.0
+            
+            if not datos.get('demanda_diaria') or datos['demanda_diaria'].strip() == "":
+                datos['demanda_diaria'] = 0
+            else:
+                datos['demanda_diaria'] = int(datos['demanda_diaria'])
+            
+            # 3. Intentar la creación en el modelo
             ProductoModel.crear(datos)
             flash('Producto registrado exitosamente.', 'success')
             return redirect(url_for('productos.listar'))
+            
         except Exception as e:
-            flash('Error al registrar producto. Código de barras duplicado o datos inválidos.', 'danger')
+            # DEPURACIÓN: Esto expondrá la verdadera razón en la consola de comandos
+            print("=========================================")
+            print(f"ERROR REAL EN CREACIÓN: {str(e)}")
+            print("=========================================")
+            
+            # Le mostramos el error detallado en la interfaz web
+            flash(f'Error al registrar producto: {str(e)}', 'danger')
             
     proveedores = ProveedorModel.obtener_paginados(limit=1000)
     return render_template('productos/nuevo.html', proveedores=proveedores)
@@ -53,13 +74,35 @@ def editar(id_producto):
 
     if request.method == 'POST':
         try:
+            # Convertimos el ImmutableMultiDict de Flask a un diccionario mutable
             datos = request.form.to_dict()
+            
+            # 1. Saneamiento de fechas (evitar cadenas vacías)
             datos['fecha_vencimiento'] = datos.get('fecha_vencimiento') or None
+            
+            # 2. Casteo explícito a tipos numéricos para evitar que se vayan como texto ("")
+            datos['precio_compra'] = float(datos['precio_compra']) if datos.get('precio_compra') else 0.0
+            datos['precio_venta'] = float(datos['precio_venta']) if datos.get('precio_venta') else 0.0
+            
+            # Si demanda_diaria viene vacío "", lo convertimos formalmente en 0 numérico
+            if not datos.get('demanda_diaria') or datos['demanda_diaria'].strip() == "":
+                datos['demanda_diaria'] = 0
+            else:
+                datos['demanda_diaria'] = int(datos['demanda_diaria'])
+
+            # 3. Ejecutar la actualización en el modelo
             ProductoModel.actualizar(id_producto, datos)
             flash('Producto actualizado exitosamente.', 'success')
             return redirect(url_for('productos.listar'))
+            
         except Exception as e:
-            flash('Error al actualizar el producto.', 'danger')
+            # DEPURACIÓN: Esto imprimirá el error real (ej: Violación de CHECK, etc.) en tu terminal de ejecución
+            print("=========================================")
+            print(f"ERROR REAL EN POSTGRESQL/PYTHON: {str(e)}")
+            print("=========================================")
+            
+            # Le mostramos el error detallado en la alerta de Flask para que sepas qué falló
+            flash(f'Error al actualizar el producto: {str(e)}', 'danger')
 
     proveedores = ProveedorModel.obtener_paginados(limit=1000)
     return render_template('productos/editar.html', producto=producto, proveedores=proveedores)
