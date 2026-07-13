@@ -17,10 +17,16 @@ class ProductoModel:
                 
                 # Se filtra por activo = TRUE según regla de negocio
                 query = """
-                    SELECT id_producto, codigo_de_barras, nombre_producto, tipo_de_producto, 
-                           precio_compra, precio_venta, marca, tipo_iva, demanda_diaria
-                    FROM Productos
-                    WHERE activo = TRUE
+                    SELECT p.id_producto, p.codigo_de_barras, p.nombre_producto, p.tipo_de_producto, 
+                           p.precio_compra, p.precio_venta, p.marca, p.tipo_iva, p.demanda_diaria,
+                           p.activo, ppp.nit_proveedor, pr.nombre_proveedor
+                    FROM Productos p
+                    LEFT JOIN Productos_Por_Proveedor ppp
+                        ON p.id_producto = ppp.codigo_producto
+                       AND ppp.activo = TRUE
+                    LEFT JOIN Proveedor pr
+                        ON ppp.nit_proveedor = pr.nit_proveedor
+                    WHERE p.activo = TRUE
                 """
                 params = []
 
@@ -60,11 +66,24 @@ class ProductoModel:
         try:
             with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
                 query = """
-                    SELECT id_producto, codigo_de_barras, nombre_producto, tipo_de_producto, 
-                           precio_compra, precio_venta, marca, fecha_vencimiento, tipo_iva, 
-                           activo, demanda_diaria
-                    FROM Productos
-                    WHERE id_producto = %s AND activo = TRUE
+                    SELECT 
+                        p.id_producto,
+                        p.codigo_de_barras,
+                        p.nombre_producto,
+                        p.tipo_de_producto,
+                        p.precio_compra,
+                        p.precio_venta,
+                        p.marca,
+                        p.fecha_vencimiento,
+                        p.tipo_iva,
+                        p.activo,
+                        p.demanda_diaria,
+                        ppp.nit_proveedor
+                    FROM Productos p
+                    LEFT JOIN Productos_Por_Proveedor ppp
+                        ON p.id_producto = ppp.codigo_producto
+                       AND ppp.activo = TRUE
+                    WHERE p.id_producto = %s AND p.activo = TRUE
                 """
                 cursor.execute(query, (id_producto,))
                 return cursor.fetchone()
@@ -86,8 +105,19 @@ class ProductoModel:
                     datos['precio_compra'], datos['precio_venta'], datos['marca'], 
                     datos.get('fecha_vencimiento'), datos['tipo_iva'], datos.get('demanda_diaria', 0)
                 ))
+                id_producto = cursor.fetchone()[0]
+                cursor.execute(
+                    """
+                    INSERT INTO Productos_Por_Proveedor (nit_proveedor, codigo_producto, precio_compra)
+                    VALUES (%s, %s, %s)
+                    """,
+                    (datos['nit_proveedor'], id_producto, datos['precio_compra'])
+                )
                 conexion.commit()
-                return cursor.fetchone()[0]
+                return id_producto
+        except Exception:
+            conexion.rollback()
+            raise
         finally:
             conexion.close()
 
@@ -108,8 +138,27 @@ class ProductoModel:
                     datos['precio_venta'], datos['marca'], datos.get('fecha_vencimiento'), 
                     datos['tipo_iva'], datos.get('demanda_diaria', 0), id_producto
                 ))
+                actualizado = cursor.rowcount > 0
+                cursor.execute(
+                    """
+                    UPDATE Productos_Por_Proveedor
+                    SET activo = FALSE, fecha_fin_suministro = CURRENT_DATE
+                    WHERE codigo_producto = %s AND activo = TRUE
+                    """,
+                    (id_producto,)
+                )
+                cursor.execute(
+                    """
+                    INSERT INTO Productos_Por_Proveedor (nit_proveedor, codigo_producto, precio_compra)
+                    VALUES (%s, %s, %s)
+                    """,
+                    (datos['nit_proveedor'], id_producto, datos['precio_compra'])
+                )
                 conexion.commit()
-                return cursor.rowcount > 0
+                return actualizado
+        except Exception:
+            conexion.rollback()
+            raise
         finally:
             conexion.close()
 

@@ -1,6 +1,7 @@
 import math
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.producto import ProductoModel
+from models.proveedor import ProveedorModel
 
 productos_bp = Blueprint('productos', __name__)
 
@@ -33,14 +34,15 @@ def nuevo():
     if request.method == 'POST':
         try:
             datos = request.form.to_dict()
-            datos['fecha_vencimiento'] = datos['fecha_vencimiento'] if datos['fecha_vencimiento'] else None
+            datos['fecha_vencimiento'] = datos.get('fecha_vencimiento') or None
             ProductoModel.crear(datos)
             flash('Producto registrado exitosamente.', 'success')
             return redirect(url_for('productos.listar'))
         except Exception as e:
             flash('Error al registrar producto. Código de barras duplicado o datos inválidos.', 'danger')
             
-    return render_template('productos/nuevo.html')
+    proveedores = ProveedorModel.obtener_paginados(limit=1000)
+    return render_template('productos/nuevo.html', proveedores=proveedores)
 
 @productos_bp.route('/editar/<int:id_producto>', methods=['GET', 'POST'])
 def editar(id_producto):
@@ -52,14 +54,15 @@ def editar(id_producto):
     if request.method == 'POST':
         try:
             datos = request.form.to_dict()
-            datos['fecha_vencimiento'] = datos['fecha_vencimiento'] if datos['fecha_vencimiento'] else None
+            datos['fecha_vencimiento'] = datos.get('fecha_vencimiento') or None
             ProductoModel.actualizar(id_producto, datos)
             flash('Producto actualizado exitosamente.', 'success')
             return redirect(url_for('productos.listar'))
         except Exception as e:
             flash('Error al actualizar el producto.', 'danger')
 
-    return render_template('productos/editar.html', producto=producto)
+    proveedores = ProveedorModel.obtener_paginados(limit=1000)
+    return render_template('productos/editar.html', producto=producto, proveedores=proveedores)
 
 @productos_bp.route('/eliminar/<int:id_producto>', methods=['POST'])
 def eliminar(id_producto):
