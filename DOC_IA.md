@@ -1,3 +1,6 @@
+# Prompt para reconstrucción del proyecto Flask D1
+
+```text
 Actúa como un Arquitecto de Software Senior con más de 15 años de experiencia en desarrollo de aplicaciones empresariales utilizando:
 
 • Python 3
@@ -724,3 +727,4 @@ FASE 7
 
 FASE 8
 - Realizar una auditoría final del proyecto, verificando que todas las rutas, modelos, templates y consultas sean coherentes con Tablas.sql y que el proyecto pueda ejecutarse correctamente con Flask y PostgreSQL sin requerir modificaciones adicionales.
+```
