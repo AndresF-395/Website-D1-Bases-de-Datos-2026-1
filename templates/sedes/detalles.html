@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalles de Sede - D1{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('sedes.listar') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Volver al Listado
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Información de la Sede -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white fw-bold py-3">
+                <i class="bi bi-building"></i> Ficha de la Sede
+            </div>
+            <div class="card-body bg-white p-4">
+                <h3 class="text-primary fw-bold mb-3">{{ sede.nombre_sede }}</h3>
+                <p class="mb-2"><strong>Barrio:</strong> {{ sede.barrio_sede }}</p>
+                <p class="mb-2"><strong>Dirección:</strong> {{ sede.direccion }}</p>
+                <p class="mb-0"><strong>Horario:</strong> {{ sede.horario_atencion_apertura }} - {{ sede.horario_atencion_cierre }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Personal Asignado -->
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-secondary text-white fw-bold py-3">
+                <i class="bi bi-people"></i> Personal Asignado a esta Sede
+            </div>
+            <div class="card-body bg-white p-0">
+                {% if personal %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Cédula</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Cargo</th>
+                                    <th>Contacto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for emp in personal %}
+                                    <tr>
+                                        <td class="fw-bold">{{ emp.cedula_empleado }}</td>
+                                        <td>{{ emp.nombre_empleado }} {{ emp.apellido_empleado }}</td>
+                                        <td><span class="badge bg-info text-dark">{{ emp.cargo }}</span></td>
+                                        <td>
+                                            <small class="d-block">📞 {{ emp.telefono_empleado or 'N/A' }}</small>
+                                            <small class="text-muted">✉️ {{ emp.correo_empleado or 'N/A' }}</small>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="p-4 text-center text-muted">
+                        <i class="bi bi-person-x display-4"></i>
+                        <p class="mt-2 mb-0">No hay empleados registrados en esta sede actualmente.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

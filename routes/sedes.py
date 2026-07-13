@@ -1,6 +1,7 @@
 import math
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.sede import SedeModel
+from models.empleado import EmpleadoModel # Importamos el modelo de empleados
 
 sedes_bp = Blueprint('sedes', __name__)
 
@@ -15,10 +16,6 @@ def listar():
     offset = (page - 1) * per_page
     
     sedes = SedeModel.obtener_paginados(per_page, offset, busqueda, orden_columna, orden_direccion)
-    # Nota: Para simplificar, asumimos que contaremos con un método de conteo en el modelo o iteraremos.
-    # En un entorno productivo de D1, el número de sedes no suele requerir paginación masiva,
-    # pero mantenemos la estructura de 100 para ser consistentes con tu requerimiento.
-    total_registros = len(sedes) # Simplificación para este módulo
     total_paginas = 1
     
     return render_template(
@@ -30,3 +27,15 @@ def listar():
         orden_columna=orden_columna,
         orden_direccion=orden_direccion
     )
+
+@sedes_bp.route('/detalles/<int:id_sede>')
+def detalles(id_sede):
+    """Muestra la ficha técnica de la sede junto con su personal asignado."""
+    sede = SedeModel.obtener_por_id(id_sede)
+    if not sede:
+        flash('Sede no encontrada.', 'warning')
+        return redirect(url_for('sedes.listar'))
+    
+    # Buscamos los empleados que corresponden a esta sede
+    personal = EmpleadoModel.obtener_por_sede(id_sede)
+    return render_template('sedes/detalles.html', sede=sede, personal=personal)

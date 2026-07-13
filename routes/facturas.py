@@ -1,5 +1,6 @@
 import math
 import uuid
+from flask import jsonify
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.factura import FacturaModel
 from models.detalle_factura import DetalleFacturaModel
@@ -35,40 +36,45 @@ def listar():
 
 
 @facturas_bp.route('/nuevo', methods=['GET', 'POST'])
+@facturas_bp.route('/nuevo', methods=['GET', 'POST'])
 def nuevo():
     if request.method == 'POST':
-        # Captura de datos de cabecera
+        # Captura de datos de cabecera enviados por el form
         id_cliente = request.form.get('id_cliente')
         id_empleado = request.form.get('id_empleado')
+        id_sede = request.form.get('id_sede')
         forma_pago = request.form.get('forma_pago')
         
-        # Para este ejemplo, asignamos la sede 1 por defecto, o puedes traerla del empleado seleccionado
-        id_sede = 1 
-        
-        # Captura de arrays (detalles)
+        # Solo confiamos en los IDs de productos y cantidades enviadas
         productos = request.form.getlist('productos[]')
-        precios = request.form.getlist('precios[]')
         cantidades = request.form.getlist('cantidades[]')
-        subtotales = request.form.getlist('subtotales[]')
-        ivas = request.form.getlist('ivas[]')
 
-        # Variables para sumarizador
         suma_subtotal = 0.0
         suma_iva = 0.0
         lista_detalles = []
 
-        # Procesar cada línea de la factura
+        # Recálculo matemático estricto en el Backend para evitar valor = 0
         for i in range(len(productos)):
-            if not productos[i]: # Prevenir líneas vacías
+            if not productos[i]: 
                 continue
                 
-            sub_linea = float(subtotales[i])
-            iva_linea = float(ivas[i])
+            id_prod = int(productos[i])
+            cant = int(cantidades[i])
+            
+            # Consultamos el precio y el IVA real desde la base de datos de forma segura
+            prod_db = ProductoModel.obtener_por_id(id_prod)
+            precio_real = float(prod_db['precio_venta'])
+            tipo_iva = prod_db['tipo_iva']
+            
+            porcentaje_iva = 0.19 if tipo_iva == 'GENERAL' else (0.05 if tipo_iva == 'DIFERENCIAL' else 0.0)
+            
+            sub_linea = precio_real * cant
+            iva_linea = sub_linea * porcentaje_iva
             
             detalle = {
-                'id_producto': int(productos[i]),
-                'cantidad': int(cantidades[i]),
-                'precio_unitario_aplicado': float(precios[i]),
+                'id_producto': id_prod,
+                'cantidad': cant,
+                'precio_unitario_aplicado': precio_real,
                 'subtotal_linea': sub_linea,
                 'iva_aplicado': iva_linea
             }
@@ -79,9 +85,7 @@ def nuevo():
 
         total_facturado = suma_subtotal + suma_iva
 
-        # Empaquetar la cabecera
         datos_factura = {
-            # Generar un prefijo DIAN y un identificador único para el proyecto
             'numero_factura_oficial': f"SETT-{uuid.uuid4().hex[:6].upper()}",
             'id_cliente': id_cliente,
             'id_sede': id_sede,
@@ -89,25 +93,35 @@ def nuevo():
             'forma_pago': forma_pago,
             'subtotal': suma_subtotal,
             'total_iva': suma_iva,
-            'total_descuento': 0, # Según reglas, 0 por defecto
+            'total_descuento': 0, 
             'total_factura': total_facturado,
-            'valor_pagado': total_facturado, # Asumimos pago exacto
+            'valor_pagado': total_facturado, 
             'cambio_devuelto': 0
         }
 
         try:
             id_nueva_factura = FacturaModel.crear_con_detalles(datos_factura, lista_detalles)
-            flash(f"Venta registrada con éxito. IVA calculado: ${suma_iva:,.2f}", 'success')
+            flash(f"Venta registrada con éxito. Total cobrado: ${total_facturado:,.2f}", 'success')
             return redirect(url_for('facturas.detalles', id_factura=id_nueva_factura))
         except Exception as e:
             flash(f"Error al registrar la venta: {str(e)}", 'danger')
 
-    # Si es GET, cargamos datos para los selects
-    clientes = ClienteModel.obtener_paginados(limit=1000)
-    empleados = EmpleadoModel.obtener_paginados(limit=100)
-    productos = ProductoModel.obtener_paginados(limit=1000)
-    
-    return render_template('facturas/nuevo.html', clientes=clientes, empleados=empleados, productos=productos)
+    # Si es GET, cargamos datos segmentados para la vista
+    sedes, clientes, empleados, inventario = FacturaModel.obtener_datos_pos()
+    return render_template('facturas/nuevo.html', sedes=sedes, clientes=clientes, empleados=empleados, inventario=inventario)
+
+# --- NUEVA RUTA PARA CREAR CLIENTES DESDE VENTAS ---
+@facturas_bp.route('/api/cliente/rapido', methods=['POST'])
+def crear_cliente_rapido():
+    try:
+        datos = request.json
+        # Insertar en modelo (asegúrate de que tu ClienteModel tenga el método crear que reciba diccionario)
+        id_cliente = ClienteModel.crear(datos)
+        return jsonify({'success': True, 'id_cliente': id_cliente, 'nombre': f"{datos['nombres']} {datos['apellidos']}", 'doc': datos['numero_documento']})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 400
+        
+        
 @facturas_bp.route('/detalles/<int:id_factura>')
 def detalles(id_factura):
     """Muestra el detalle de una factura inmutable."""

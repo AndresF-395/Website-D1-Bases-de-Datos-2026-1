@@ -33,14 +33,16 @@ def listar():
 def nuevo():
     if request.method == 'POST':
         try:
-            datos = request.form.to_dict()
+            # LIMPIEZA DE DATOS: Convierte campos vacíos "" en None para evitar romper restricciones UNIQUE
+            datos = {k: (v.strip() if v.strip() != "" else None) for k, v in request.form.items()}
+            
             EmpleadoModel.crear(datos)
             flash('Empleado registrado exitosamente.', 'success')
             return redirect(url_for('empleados.listar'))
         except ValueError as e:
             flash(str(e), 'danger')
         except Exception as e:
-            flash('Error general al registrar empleado. Verifica los datos.', 'danger')
+            flash(f'Error al registrar empleado: {str(e)}', 'danger')
             
     sedes = SedeModel.obtener_todas()
     return render_template('empleados/nuevo.html', sedes=sedes)
@@ -54,12 +56,14 @@ def editar(id_empleado):
 
     if request.method == 'POST':
         try:
-            datos = request.form.to_dict()
+            # LIMPIEZA DE DATOS: Convierte campos vacíos "" en None para actualización segura
+            datos = {k: (v.strip() if v.strip() != "" else None) for k, v in request.form.items()}
+            
             EmpleadoModel.actualizar(id_empleado, datos)
             flash('Empleado actualizado exitosamente.', 'success')
             return redirect(url_for('empleados.listar'))
         except Exception as e:
-            flash('Error al actualizar el empleado.', 'danger')
+            flash(f'Error al actualizar el empleado: {str(e)}', 'danger')
 
     sedes = SedeModel.obtener_todas()
     return render_template('empleados/editar.html', empleado=empleado, sedes=sedes)

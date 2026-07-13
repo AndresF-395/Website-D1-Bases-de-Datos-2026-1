@@ -54,8 +54,8 @@
                 <td>{{ sede.direccion_sede }}</td>
                 <td>{{ sede.ciudad_sede }}</td>
                 <td class="text-center">
-                    <a href="{{ url_for('empleados.listar', busqueda=sede.nombre_sede) }}" class="btn btn-sm btn-outline-info" title="Ver empleados de esta sede">
-                        <i class="bi bi-people"></i> Ver Equipo
+                    <a href="{{ url_for('sedes.detalles', id_sede=sede.id_sede) }}" class="btn btn-sm btn-info text-white">
+                        <i class="bi bi-people-fill"></i> Ver Personal
                     </a>
                 </td>
             </tr>

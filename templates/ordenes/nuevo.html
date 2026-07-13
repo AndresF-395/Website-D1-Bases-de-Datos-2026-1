@@ -16,20 +16,31 @@
         <div class="card-body bg-white p-3">
             <div class="row g-3">
                 <div class="col-md-3">
-                    <label class="form-label fw-bold small text-muted">Proveedor Destino *</label>
-                    <select name="nit_proveedor" id="select-proveedor" class="form-select" required>
-                        <option value="" disabled selected>Seleccione el proveedor...</option>
+                    <label class="form-label fw-bold small text-muted">Sede Destino *</label>
+                    <select name="id_sede" id="select-sede" class="form-select" required>
+                        <option value="" disabled selected>Seleccione la sede...</option>
+                        {% for sede in sedes %}
+                            <option value="{{ sede.id_sede }}">{{ sede.nombre_sede }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-muted">Proveedor *</label>
+                    <select name="nit_proveedor" id="select-proveedor" class="form-select" required disabled>
+                        <option value="" disabled selected>Seleccione primero una sede...</option>
                         {% for proveedor in proveedores %}
-                            <option value="{{ proveedor.nit_proveedor }}">{{ proveedor.nombre_proveedor }} (NIT: {{ proveedor.nit_proveedor }})</option>
+                            <option value="{{ proveedor.nit_proveedor }}">{{ proveedor.nombre_proveedor }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label fw-bold small text-muted">Solicitante (Empleado) *</label>
-                    <select name="id_empleado" class="form-select" required>
-                        <option value="" disabled selected>Seleccione quién solicita...</option>
+                    <select name="id_empleado" id="select-empleado" class="form-select" required disabled>
+                        <option value="" disabled selected>Seleccione empleado...</option>
                         {% for empleado in empleados %}
-                            <option value="{{ empleado.id_empleado }}">{{ empleado.nombre_empleado }} {{ empleado.apellido_empleado }}</option>
+                            <option value="{{ empleado.id_empleado }}" data-sede="{{ empleado.id_sede }}">
+                                {{ empleado.nombre_empleado }} {{ empleado.apellido_empleado }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
@@ -37,9 +48,9 @@
                     <label class="form-label fw-bold small text-muted">Fecha de Orden *</label>
                     <input type="datetime-local" name="fecha_orden" class="form-control" required id="fecha_actual">
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold small text-muted">Lugar de Entrega (Bodega) *</label>
-                    <input type="text" name="lugar_entrega" class="form-control" placeholder="Ej. Bodega Palmira" required>
+                <div class="col-md-12">
+                    <label class="form-label fw-bold small text-muted">Lugar de Entrega (Bodega / Dirección) *</label>
+                    <input type="text" name="lugar_entrega" class="form-control" placeholder="Ej. Bodega Principal Sede Norte" required>
                 </div>
             </div>
         </div>
@@ -48,7 +59,7 @@
     <!-- DETALLE: Líneas de Insumos/Productos -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-secondary text-white fw-bold py-2 d-flex justify-content-between align-items-center">
-            <span>Insumos / Productos a Solicitar (Se habilitan al elegir proveedor)</span>
+            <span>Productos a Solicitar (Filtrados por Sede y Proveedor)</span>
             <button type="button" class="btn btn-sm btn-light text-dark fw-bold" id="btn-add-row" disabled><i class="bi bi-plus-lg"></i> Agregar Fila</button>
         </div>
         <div class="card-body bg-white p-0">
@@ -57,31 +68,29 @@
                     <tr>
                         <th style="width: 45%;">Código y Producto</th>
                         <th style="width: 15%;">Costo Unit. Negociado</th>
-                        <th style="width: 15%;">Cant. / Peso</th>
-                        <th style="width: 15%;">Subtotal</th>
+                        <th style="width: 15%;">Cant. a Pedir</th>
+                        <th style="width: 15%;">Subtotal Línea</th>
                         <th style="width: 10%;" class="text-center">Quitar</th>
                     </tr>
                 </thead>
                 <tbody id="tbody-detalles">
-                    <!-- Fila Base (Oculta para clonar) -->
                     <tr class="detalle-row d-none" id="base-row">
                         <td>
-                            <select class="form-select select-producto" name="productos[]" disabled>
-                                <option value="" data-costo="0" data-nit="" disabled selected>Seleccione producto...</option>
-                                {% for prod in productos %}
-                                    <!-- Aquí se incrusta el data-nit para vincularlo al proveedor y el precio real de compra -->
-                                    <option value="{{ prod.id_producto }}" data-costo="{{ prod.precio_compra }}" data-nit="{{ prod.nit_proveedor }}">
-                                        [{{ prod.codigo_de_barras }}] {{ prod.nombre_producto }}
-                                    </option>
-                                {% endfor %}
+                                <select class="form-select select-producto" name="productos[]" disabled>
+                                    <option value="" data-costo="0" data-nit="" data-sede="" disabled selected>Seleccione producto...</option>
+                                    {% for prod in productos %}
+                                        <option value="{{ prod.id_producto }}" data-costo="{{ prod.precio_compra }}" data-nit="{{ prod.nit_proveedor }}" data-sede="{{ prod.id_sede }}">
+                                        [{{ prod.codigo_de_barras }}] {{ prod.nombre_producto }} (Stock Sede: {{ prod.stock_sede }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
                             </select>
-                            <small class="text-muted" style="font-size: 0.7rem;">Nota: Algunos básicos se piden en peso (Ej. 2.5 kg).</small>
                         </td>
                         <td>
                             <input type="number" step="0.01" class="form-control input-costo bg-light" name="costos[]" readonly value="0">
                         </td>
                         <td>
-                            <input type="number" class="form-control input-cantidad" name="cantidades[]" min="1" max="500" step="1" value="1" disabled>
+                            <input type="number" class="form-control input-cantidad" name="cantidades[]" min="1" max="10000" step="1" value="1" disabled>
                         </td>
                         <td>
                             <input type="number" step="0.01" class="form-control input-subtotal bg-light text-danger fw-bold" readonly value="0">
@@ -94,7 +103,7 @@
             </table>
         </div>
         <div class="card-footer bg-white border-top text-end p-3">
-            <h4 class="mb-0 text-danger fw-bold">COSTO TOTAL: $<span id="gran-total">0.00</span></h4>
+            <h4 class="mb-0 text-danger fw-bold">COSTO TOTAL ORDEN: $<span id="gran-total">0.00</span></h4>
         </div>
     </div>
 
@@ -110,37 +119,69 @@
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         document.getElementById('fecha_actual').value = now.toISOString().slice(0,16);
 
+        const selectSede = document.getElementById('select-sede');
         const selectProveedor = document.getElementById('select-proveedor');
+        const selectEmpleado = document.getElementById('select-empleado');
         const btnAdd = document.getElementById('btn-add-row');
         const tbody = document.getElementById('tbody-detalles');
         const baseRow = document.getElementById('base-row');
         const granTotalEl = document.getElementById('gran-total');
 
-        // Filtrar productos según el proveedor seleccionado
-        selectProveedor.addEventListener('change', function() {
-            const nitSeleccionado = this.value;
-            btnAdd.removeAttribute('disabled'); // Habilitar agregar filas
+        // Filtro Primario: Selección de Sede
+        selectSede.addEventListener('change', function() {
+            const sedeId = this.value;
+            selectProveedor.removeAttribute('disabled');
+            selectEmpleado.removeAttribute('disabled');
             
-            // Limpiar filas existentes si cambia el proveedor
+            // Reiniciar campos dependientes
+            selectProveedor.value = "";
+            selectEmpleado.value = "";
+            btnAdd.setAttribute('disabled', 'true');
+            
+            // Limpiar filas de la tabla si cambian la sede
             document.querySelectorAll('.detalle-row:not(.d-none)').forEach(row => row.remove());
             actualizarTotal();
 
-            // Configurar la fila base para que solo muestre productos de este proveedor
+            // Filtrar empleados que pertenecen a la sede seleccionada
+            Array.from(selectEmpleado.options).forEach(opt => {
+                if (opt.value === "" || opt.getAttribute('data-sede') === sedeId) {
+                    opt.style.display = 'block';
+                } else {
+                    opt.style.display = 'none';
+                }
+            });
+            
+            selectProveedor.options[0].text = "Seleccione el proveedor...";
+        });
+
+        // Filtro Secundario: Selección de Proveedor (Cruce de Sede + Proveedor)
+        selectProveedor.addEventListener('change', function() {
+            const nitSeleccionado = this.value;
+            const sedeSeleccionada = selectSede.value;
+            btnAdd.removeAttribute('disabled');
+            
+            // Limpiar filas si cambian de proveedor
+            document.querySelectorAll('.detalle-row:not(.d-none)').forEach(row => row.remove());
+            actualizarTotal();
+
+            // Filtrar productos en la fila base (molde)
             const opciones = baseRow.querySelectorAll('.select-producto option');
             opciones.forEach(opt => {
-                if (opt.value === "" || opt.getAttribute('data-nit') === nitSeleccionado) {
+                const prodNit = opt.getAttribute('data-nit');
+                const prodSede = opt.getAttribute('data-sede');
+                
+                // Mostrar si es la opción por defecto O si coincide con ambas reglas
+                if (opt.value === "" || (prodNit === nitSeleccionado && prodSede === sedeSeleccionada)) {
                     opt.style.display = 'block';
                 } else {
                     opt.style.display = 'none';
                 }
             });
         });
-
         function actualizarTotal() {
             let total = 0;
             document.querySelectorAll('.detalle-row:not(.d-none)').forEach(row => {
-                const subtotal = parseFloat(row.querySelector('.input-subtotal').value) || 0;
-                total += subtotal;
+                total += parseFloat(row.querySelector('.input-subtotal').value) || 0;
             });
             granTotalEl.innerText = total.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
@@ -178,7 +219,7 @@
             const filasActivas = document.querySelectorAll('.detalle-row:not(.d-none)');
             if (filasActivas.length === 0) {
                 e.preventDefault();
-                alert("Debe agregar al menos un producto/insumo a la orden de pedido.");
+                alert("Debe agregar al menos un producto a la orden de pedido.");
             }
         });
     });

@@ -3,6 +3,39 @@ from psycopg2.extras import RealDictCursor
 from conexion import conectar
 
 class FacturaModel:
+
+    @staticmethod
+    def obtener_datos_pos():
+        """Obtiene datos iniciales filtrados para el Punto de Venta (POS)."""
+        conexion = conectar()
+        try:
+            with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+                # 1. Sedes
+                cursor.execute("SELECT id_sede, nombre_sede FROM Sedes ORDER BY nombre_sede;")
+                sedes = cursor.fetchall()
+                
+                # 2. Clientes
+                cursor.execute("SELECT id_cliente, nombres, apellidos, numero_documento FROM Cliente ORDER BY nombres;")
+                clientes = cursor.fetchall()
+                
+                # 3. Empleados vinculados a su sede
+                cursor.execute("SELECT id_empleado, nombre_empleado, apellido_empleado, id_sede FROM Empleados;")
+                empleados = cursor.fetchall()
+                
+                # 4. Inventario cruzado con Productos para saber stock exacto por sede
+                query_inv = """
+                    SELECT i.id_sede, i.id_producto, p.nombre_producto, p.codigo_de_barras, 
+                           i.cantidad_disponible, p.precio_venta, p.tipo_iva
+                    FROM Inventario i
+                    INNER JOIN Productos p ON i.id_producto = p.id_producto
+                    WHERE i.cantidad_disponible > 0 AND p.activo = TRUE;
+                """
+                cursor.execute(query_inv)
+                inventario = cursor.fetchall()
+                
+                return sedes, clientes, empleados, inventario
+        finally:
+            conexion.close()
     
     @staticmethod
     def obtener_paginados(limit=100, offset=0, busqueda=None, orden_columna='fecha_emision', orden_direccion='DESC'):

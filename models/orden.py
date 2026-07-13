@@ -181,11 +181,45 @@ class OrdenModel:
                             det['precio_compra_unitario'], det['subtotal_pedido']
                         )
                     )
-
+    
                 conexion.commit()
                 return id_orden
         except Exception:
             conexion.rollback()
             raise
+        finally:
+            conexion.close()
+
+    @staticmethod
+    def obtener_datos_pedido():
+        """Obtiene sedes, proveedores, empleados y el catálogo cruzado con la tabla intermedia y el stock."""
+        conexion = conectar()
+        try:
+            with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("SELECT id_sede, nombre_sede FROM Sedes ORDER BY nombre_sede;")
+                sedes = cursor.fetchall()
+                
+                cursor.execute("SELECT nit_proveedor, nombre_proveedor FROM Proveedor ORDER BY nombre_proveedor;")
+                proveedores = cursor.fetchall()
+                
+                cursor.execute("SELECT id_empleado, nombre_empleado, apellido_empleado, id_sede FROM Empleados;")
+                empleados = cursor.fetchall()
+                
+                # Cruce maestro: Productos vinculados al proveedor, cruzados con todas las sedes
+                query_productos = """
+                    SELECT p.id_producto, p.nombre_producto, p.codigo_de_barras, 
+                           pp.precio_compra, pp.nit_proveedor,
+                           s.id_sede, COALESCE(i.cantidad_disponible, 0) AS stock_sede
+                    FROM Productos p
+                    INNER JOIN Productos_Por_Proveedor pp ON p.id_producto = pp.codigo_producto
+                    CROSS JOIN Sedes s
+                    LEFT JOIN Inventario i ON p.id_producto = i.id_producto AND s.id_sede = i.id_sede
+                    WHERE p.activo = TRUE AND pp.activo = TRUE
+                    ORDER BY p.nombre_producto;
+                """
+                cursor.execute(query_productos)
+                productos_inventario = cursor.fetchall()
+                
+                return sedes, proveedores, empleados, productos_inventario
         finally:
             conexion.close()

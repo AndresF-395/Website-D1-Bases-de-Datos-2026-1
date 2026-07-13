@@ -5,6 +5,8 @@ from models.detalle_pedido import DetallePedidoModel
 from models.proveedor import ProveedorModel
 from models.empleado import EmpleadoModel
 from models.producto import ProductoModel
+from psycopg2.extras import RealDictCursor
+from conexion import conectar
 
 ordenes_bp = Blueprint('ordenes', __name__)
 
@@ -37,11 +39,13 @@ def listar():
 @ordenes_bp.route('/nuevo', methods=['GET', 'POST'])
 def nuevo():
     if request.method == 'POST':
+        conexion = conectar() # Abrimos conexión manual para validar precios seguros
         try:
-            empleado = EmpleadoModel.obtener_por_id(request.form.get('id_empleado'))
-            if not empleado:
-                flash('Empleado solicitante no encontrado.', 'danger')
-                return redirect(url_for('ordenes.nuevo'))
+            id_sede = request.form.get('id_sede')
+            nit_proveedor = request.form.get('nit_proveedor')
+            id_empleado = request.form.get('id_empleado')
+            fecha_orden = request.form.get('fecha_orden') or None
+            lugar_entrega = request.form.get('lugar_entrega')
 
             productos = request.form.getlist('productos[]')
             cantidades = request.form.getlist('cantidades[]')
@@ -49,55 +53,67 @@ def nuevo():
             lista_detalles = []
             total = 0.0
 
-            for i, id_producto in enumerate(productos):
-                if not id_producto:
-                    continue
+            with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+                # Recálculo matemático en el backend usando la tabla Productos_Por_Proveedor
+                for i, id_producto in enumerate(productos):
+                    if not id_producto:
+                        continue
 
-                cantidad = int(float(cantidades[i]))
+                    cantidad = int(float(cantidades[i]))
+                    if cantidad < 1:
+                        raise ValueError('La cantidad mínima por producto es 1.')
 
-                producto = ProductoModel.obtener_por_id(int(id_producto))
+                    # Buscamos el precio real de compra negociado con ESTE proveedor
+                    cursor.execute("""
+                        SELECT precio_compra 
+                        FROM Productos_Por_Proveedor 
+                        WHERE codigo_producto = %s AND nit_proveedor = %s AND activo = TRUE
+                    """, (int(id_producto), nit_proveedor))
+                    
+                    producto_proveedor = cursor.fetchone()
+                    if not producto_proveedor:
+                         raise ValueError(f'El producto {id_producto} no está vinculado activamente a este proveedor.')
 
-                if not producto:
-                     raise ValueError('Producto no encontrado.')
-
-                costo = float(producto['precio_compra'])
-
-                if cantidad < 1:
-                    raise ValueError('La cantidad minima por producto es 1.')
-
-                subtotal = cantidad * costo
-                lista_detalles.append({
-                    'id_producto': int(id_producto),
-                    'cantidad': cantidad,
-                    'precio_compra_unitario': costo,
-                    'subtotal_pedido': subtotal
-                })
-                total += subtotal
+                    costo = float(producto_proveedor['precio_compra'])
+                    subtotal = cantidad * costo
+                    
+                    lista_detalles.append({
+                        'id_producto': int(id_producto),
+                        'cantidad': cantidad,
+                        'precio_compra_unitario': costo,
+                        'subtotal_pedido': subtotal
+                    })
+                    total += subtotal
 
             if not lista_detalles:
                 raise ValueError('Debe agregar al menos un producto a la orden.')
 
             datos_orden = {
-                'nit_proveedor': request.form['nit_proveedor'],
-                'id_sede': empleado['id_sede'],
-                'fecha_pedido': request.form.get('fecha_orden') or None,
+                'nit_proveedor': nit_proveedor,
+                'id_sede': id_sede,
+                'fecha_pedido': fecha_orden,
                 'estado_pedido': 'PENDIENTE',
                 'total': total,
-                'lugar_entrega': request.form['lugar_entrega']
+                'lugar_entrega': lugar_entrega
             }
 
             id_orden = OrdenModel.crear_con_detalles(datos_orden, lista_detalles)
             flash('Orden de pedido registrada exitosamente.', 'success')
             return redirect(url_for('ordenes.detalles', id_orden_pedido=id_orden))
+        
         except Exception as e:
             flash(f'Error al registrar la orden: {str(e)}', 'danger')
+        finally:
+            conexion.close()
 
-    proveedores = ProveedorModel.obtener_paginados(limit=1000)
-    empleados = EmpleadoModel.obtener_paginados(limit=100)
-    productos = ProductoModel.obtener_paginados(limit=1000)
+    # Si es GET, cargamos los datos
+    sedes, proveedores, empleados, productos = OrdenModel.obtener_datos_pedido()
 
-    return render_template('ordenes/nuevo.html', proveedores=proveedores, empleados=empleados, productos=productos)
-
+    return render_template('ordenes/nuevo.html', 
+                           sedes=sedes, 
+                           proveedores=proveedores, 
+                           empleados=empleados, 
+                           productos=productos)
 
 @ordenes_bp.route('/detalles/<int:id_orden_pedido>')
 def detalles(id_orden_pedido):

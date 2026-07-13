@@ -131,3 +131,20 @@ class EmpleadoModel:
             raise ValueError("No se puede eliminar el empleado porque tiene facturas o turnos asociados.")
         finally:
             conexion.close()
+    @staticmethod
+    def obtener_por_sede(id_sede):
+        """Recupera todos los empleados asignados a una sede específica."""
+        conexion = conectar()
+        try:
+            with conexion.cursor(cursor_factory=RealDictCursor) as cursor:
+                query = """
+                    SELECT id_empleado, cedula_empleado, nombre_empleado, apellido_empleado, 
+                           cargo, telefono_empleado, correo_empleado, salario
+                    FROM Empleados
+                    WHERE id_sede = %s
+                    ORDER BY nombre_empleado ASC
+                """
+                cursor.execute(query, (id_sede,))
+                return cursor.fetchall()
+        finally:
+            conexion.close()

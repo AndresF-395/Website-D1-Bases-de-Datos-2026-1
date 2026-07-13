@@ -506,3 +506,37 @@ AFTER INSERT
 ON Detalles_Pedidos
 FOR EACH ROW
 EXECUTE FUNCTION fx_actualizar_inventario_pedido();
+
+-- ======================================
+-- SINCRONIZACIÓN DE SECUENCIAS (SERIALS)
+-- ======================================
+-- Este bloque actualiza los contadores automáticos al último ID insertado 
+-- para evitar errores de llaves duplicadas al insertar desde la aplicación.
+
+SELECT setval(pg_get_serial_sequence('departamentos', 'id_departamento'), COALESCE(MAX(id_departamento), 1)) FROM departamentos;
+
+SELECT setval(pg_get_serial_sequence('tipos_turno', 'id_tipo_turno'), COALESCE(MAX(id_tipo_turno), 1)) FROM tipos_turno;
+
+SELECT setval(pg_get_serial_sequence('ciudad', 'id_ciudad'), COALESCE(MAX(id_ciudad), 1)) FROM ciudad;
+
+SELECT setval(pg_get_serial_sequence('cliente', 'id_cliente'), COALESCE(MAX(id_cliente), 1)) FROM cliente;
+
+SELECT setval(pg_get_serial_sequence('productos', 'id_producto'), COALESCE(MAX(id_producto), 1)) FROM productos;
+
+SELECT setval(pg_get_serial_sequence('productos_por_proveedor', 'id_producto_proveedor'), COALESCE(MAX(id_producto_proveedor), 1)) FROM productos_por_proveedor;
+
+SELECT setval(pg_get_serial_sequence('sedes', 'id_sede'), COALESCE(MAX(id_sede), 1)) FROM sedes;
+
+SELECT setval(pg_get_serial_sequence('empleados', 'id_empleado'), COALESCE(MAX(id_empleado), 1)) FROM empleados;
+
+SELECT setval(pg_get_serial_sequence('inventario', 'id_inventario'), COALESCE(MAX(id_inventario), 1)) FROM inventario;
+
+SELECT setval(pg_get_serial_sequence('factura', 'id_factura'), COALESCE(MAX(id_factura), 1)) FROM factura;
+
+SELECT setval(pg_get_serial_sequence('detalle_factura', 'id_linea'), COALESCE(MAX(id_linea), 1)) FROM detalle_factura;
+
+SELECT setval(pg_get_serial_sequence('turnos', 'id_turno'), COALESCE(MAX(id_turno), 1)) FROM turnos;
+
+SELECT setval(pg_get_serial_sequence('ordenes_pedidos', 'id_orden_pedido'), COALESCE(MAX(id_orden_pedido), 1)) FROM ordenes_pedidos;
+
+SELECT setval(pg_get_serial_sequence('detalles_pedidos', 'id_detalle_pedido'), COALESCE(MAX(id_detalle_pedido), 1)) FROM detalles_pedidos;
